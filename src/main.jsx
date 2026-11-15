@@ -41,7 +41,8 @@ function App() {
       ['Appui professionnel', 'Aide méthodologique, structuration des idées, expression écrite et orale et recherche de ressources pour vos activités.']
     ],
     about: 'Une démarche exigeante, profondément humaine',
-    aboutText: 'Berger-Le-Bonheur RAWAGO met la connaissance et la méthode au service de vos ambitions. Chaque demande est étudiée avec attention afin de proposer une réponse adaptée, claire et réaliste.',
+    aboutText: 'Berger-Le-Bonheur RAWAGO met la connaissance et la méthode au service de vos ambitions. En tant que fondateur, je porte une vision fondée sur la rigueur, la transmission du savoir et un accompagnement attentif de chaque personne. Chaque demande est étudiée avec attention afin de proposer une réponse adaptée, claire et réaliste.',
+    founder: 'Fondateur de Berger-Le-Bonheur RAWAGO',
     levels: 'Collège · Lycée · Licence · Master · Préparation aux concours',
     modal: 'À distance dans le monde entier. En présentiel au Sénégal.',
     quote: 'Parlons de votre projet',
@@ -83,7 +84,8 @@ function App() {
       ['Professional support', 'Methodology, structuring ideas, written and oral communication and resource research for your work.']
     ],
     about: 'A demanding and deeply human approach',
-    aboutText: 'Berger-Le-Bonheur RAWAGO puts knowledge and method at the service of your ambitions. Every request is carefully reviewed to provide a clear and relevant response.',
+    aboutText: 'Berger-Le-Bonheur RAWAGO puts knowledge and method at the service of your ambitions. As founder, I promote a vision based on rigour, knowledge sharing and attentive support. Every request is carefully reviewed to provide a clear and relevant response.',
+    founder: 'Founder of Berger-Le-Bonheur RAWAGO',
     levels: 'Middle school · High school · Bachelor · Master · Competitive exams',
     modal: 'Online worldwide. In-person in Senegal.',
     quote: 'Let’s discuss your project',
@@ -167,7 +169,7 @@ function App() {
           <div className="hero-visual">
             <img
               src="https://images.unsplash.com/photo-1529390079861-591de354faf5?auto=format&fit=crop&w=1200&q=85"
-              alt="Étudiants échangeant autour de leurs apprentissages"
+              alt="Élèves étudiant ensemble"
             />
             <div className="visual-note">
               <BookOpen />
@@ -197,19 +199,23 @@ function App() {
         <section className="about section" id="about">
           <div className="about-photo">
             <img
-              src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1000&q=85"
-              alt="Groupe d’étudiants travaillant ensemble"
+              src="/portrait-rawago.jpeg"
+              alt="Portrait professionnel de Berger-Le-Bonheur RAWAGO"
             />
-            <div className="photo-tag">RAWAGO · Le savoir réussit</div>
+            <div className="photo-tag">BERGER-LE-BONHEUR RAWAGO</div>
           </div>
+
           <div className="about-copy">
-            <div className="eyebrow">NOTRE ENGAGEMENT</div>
+            <div className="eyebrow">{fr ? 'LE FONDATEUR' : 'THE FOUNDER'}</div>
             <h2>{copy.about}</h2>
+            <h3>{copy.founder}</h3>
             <p>{copy.aboutText}</p>
+
             <div className="info">
               <b>{fr ? 'Publics accompagnés' : 'Who we support'}</b>
               <span>{copy.levels}</span>
             </div>
+
             <div className="info">
               <b>{fr ? 'Modalités' : 'Delivery'}</b>
               <span>{copy.modal}</span>
@@ -269,6 +275,7 @@ function App() {
                     {copy.levelsList.map(item => <option key={item}>{item}</option>)}
                   </select>
                 </label>
+
                 <label>
                   {copy.subject}
                   <select name="Matière" value={form.subject} onChange={e => update('subject', e.target.value)}>
@@ -276,6 +283,7 @@ function App() {
                     {copy.subjects.map(item => <option key={item}>{item}</option>)}
                   </select>
                 </label>
+
                 <label>
                   {copy.mode}
                   <select name="Modalité" value={form.mode} onChange={e => update('mode', e.target.value)}>
