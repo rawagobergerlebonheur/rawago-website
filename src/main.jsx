@@ -118,6 +118,24 @@ function App() {
     setForm(previous => ({ ...previous, [field]: value }));
   };
 
+  const portrait = (
+    <img
+      className="mark"
+      src="/portrait-rawago.jpeg"
+      alt="Portrait de Berger-Le-Bonheur RAWAGO"
+      style={{
+        display: 'block',
+        width: '50px',
+        height: '50px',
+        minWidth: '50px',
+        objectFit: 'cover',
+        objectPosition: 'center 35%',
+        padding: 0,
+        borderRadius: '50%'
+      }}
+    />
+  );
+
   const services = [
     { icon: <GraduationCap />, title: copy.servicesList[0][0], text: copy.servicesList[0][1] },
     { icon: <Search />, title: copy.servicesList[1][0], text: copy.servicesList[1][1] },
@@ -128,7 +146,7 @@ function App() {
     <>
       <header>
         <a className="brand" href="#home">
-          <span className="mark">BR</span>
+          {portrait}
           <span>BERGER-LE-BONHEUR<small>RAWAGO</small></span>
         </a>
 
@@ -152,12 +170,14 @@ function App() {
         <section className="hero" id="home">
           <div className="hero-copy">
             <div className="eyebrow">{copy.eyebrow}</div>
-            <h1>{copy.title.split('\n').map((line, index) => (
-              <React.Fragment key={line}>
-                {index > 0 && <br />}
-                {line}
-              </React.Fragment>
-            ))}</h1>
+            <h1>
+              {copy.title.split('\n').map((line, index) => (
+                <React.Fragment key={line}>
+                  {index > 0 && <br />}
+                  {line}
+                </React.Fragment>
+              ))}
+            </h1>
             <p>{copy.intro}</p>
             <div className="actions">
               <a className="btn primary" href="#services">{copy.cta}<ArrowRight size={17} /></a>
@@ -335,7 +355,7 @@ function App() {
 
       <footer>
         <a className="brand light" href="#home">
-          <span className="mark">BR</span>
+          {portrait}
           <span>BERGER-LE-BONHEUR<small>RAWAGO</small></span>
         </a>
         <p>{copy.footer}</p>
