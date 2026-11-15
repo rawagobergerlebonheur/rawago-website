@@ -56,7 +56,7 @@ function App() {
   });
 
   const copy = fr ? {
-    nav: ['Accueil', 'Nos services', 'À propos', 'Contact', 'Espace client'],
+    nav: ['Accueil', 'Nos services', 'À propos', 'Contact', 'Espace Client'],
     eyebrow: 'SAVOIR · ACCOMPAGNEMENT · DOCUMENTATION',
     title: 'Le savoir ouvre des chemins.\nAvançons ensemble.',
     intro: 'Un accompagnement humain et rigoureux pour apprendre, progresser, trouver les bonnes ressources et concrétiser vos projets.',
@@ -99,7 +99,7 @@ function App() {
     levelsList: ['Collège', 'Lycée', 'Licence', 'Master', 'Préparation aux concours', 'Autre'],
     resources: ['Livre', 'Article scientifique', 'Document historique', 'Rapport', 'Mémoire ou recherche', 'Autre']
   } : {
-    nav: ['Home', 'Services', 'About', 'Contact', 'Client area'],
+    nav: ['Home', 'Services', 'About', 'Contact', 'Client Area'],
     eyebrow: 'KNOWLEDGE · GUIDANCE · DOCUMENTATION',
     title: 'Knowledge opens paths.\nLet’s move forward together.',
     intro: 'Human-centred, rigorous support to learn, make progress, find the right resources and bring your projects to life.',
@@ -272,8 +272,10 @@ function App() {
   async function handleSignOut() {
     setAuthError('');
     const { error } = await supabase.auth.signOut();
-    if (error) setAuthError(error.message);
-    else {
+
+    if (error) {
+      setAuthError(error.message);
+    } else {
       setAuthMessage(fr ? 'Vous êtes déconnecté.' : 'You are signed out.');
       setAuthForm({ fullName: '', email: '', password: '' });
     }
@@ -440,6 +442,7 @@ function App() {
             <h2>{copy.services}</h2>
             <p>{copy.sub}</p>
           </div>
+
           <div className="cards">
             {services.map((service, index) => (
               <article className="card" key={index}>
@@ -468,10 +471,12 @@ function App() {
             <h2>{copy.about}</h2>
             <h3>{copy.founder}</h3>
             <p>{copy.aboutText}</p>
+
             <div className="info">
               <b>{fr ? 'Publics accompagnés' : 'Who we support'}</b>
               <span>{copy.levels}</span>
             </div>
+
             <div className="info">
               <b>{fr ? 'Modalités' : 'Delivery'}</b>
               <span>{copy.modal}</span>
@@ -535,6 +540,7 @@ function App() {
                     {copy.levelsList.map(item => <option key={item}>{item}</option>)}
                   </select>
                 </label>
+
                 <label>
                   {copy.subject}
                   <select name="Matière" value={form.subject} onChange={e => update('subject', e.target.value)}>
@@ -542,6 +548,7 @@ function App() {
                     {copy.subjects.map(item => <option key={item}>{item}</option>)}
                   </select>
                 </label>
+
                 <label>
                   {copy.mode}
                   <select name="Modalité" value={form.mode} onChange={e => update('mode', e.target.value)}>
@@ -583,6 +590,7 @@ function App() {
             </label>
 
             <p className="form-note">{copy.note}</p>
+
             <button className="btn primary" type="submit">
               {copy.send}<Send size={16} />
             </button>
@@ -594,7 +602,7 @@ function App() {
             <div className="eyebrow">
               {fr ? 'VOTRE ESPACE PERSONNEL' : 'YOUR PERSONAL AREA'}
             </div>
-            <h2>{fr ? 'Espace client RAWAGO' : 'RAWAGO Client Area'}</h2>
+            <h2>{fr ? 'Espace Client' : 'Client Area'}</h2>
             <p>
               {fr
                 ? 'Créez votre compte pour transmettre vos demandes et suivre leur évolution.'
@@ -628,6 +636,7 @@ function App() {
                 >
                   {fr ? 'Se connecter' : 'Sign in'}
                 </button>
+
                 <button
                   type="button"
                   className={authMode === 'signup' ? 'active' : ''}
@@ -703,11 +712,10 @@ function App() {
                   <div className="eyebrow">
                     {fr ? 'BIENVENUE' : 'WELCOME'}
                   </div>
-                  <h3>
-                    {profile?.full_name || session.user.email}
-                  </h3>
+                  <h3>{profile?.full_name || session.user.email}</h3>
                   <p>{session.user.email}</p>
                 </div>
+
                 <button className="btn secondary dark-button" type="button" onClick={handleSignOut}>
                   <LogOut size={16} />
                   {fr ? 'Déconnexion' : 'Sign out'}
@@ -750,6 +758,7 @@ function App() {
                             {copy.levelsList.map(item => <option key={item}>{item}</option>)}
                           </select>
                         </label>
+
                         <label>
                           {copy.subject}
                           <select
@@ -760,6 +769,7 @@ function App() {
                             {copy.subjects.map(item => <option key={item}>{item}</option>)}
                           </select>
                         </label>
+
                         <label>
                           {copy.mode}
                           <select
@@ -844,8 +854,10 @@ function App() {
                               {statusLabel(item.status)}
                             </span>
                           </div>
+
                           {item.subject && <p>{item.subject}</p>}
                           <p>{item.description}</p>
+
                           <small>
                             {fr ? 'Envoyée le ' : 'Submitted on '}
                             {new Date(item.created_at).toLocaleDateString(
