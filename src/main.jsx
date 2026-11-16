@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import {
@@ -19,7 +18,8 @@ function App() {
   const [authLoading, setAuthLoading] = useState(true);
   const [profile, setProfile] = useState(null);
   const [requests, setRequests] = useState([]);
-  const [adminProfiles, setAdminProfiles] = useState([]);
+  const [clientProfiles, setClientProfiles] = useState([]);
+  const [statusSaving, setStatusSaving] = useState(null);
   const [authMode, setAuthMode] = useState('login');
   const [authMessage, setAuthMessage] = useState('');
   const [authError, setAuthError] = useState('');
@@ -186,7 +186,7 @@ function App() {
     if (!session?.user) {
       setProfile(null);
       setRequests([]);
-      setAdminProfiles([]);
+      setClientProfiles([]);
       return;
     }
 
@@ -194,8 +194,6 @@ function App() {
 
     async function loadClientArea() {
       setRequestsLoading(true);
-      setAuthError('');
-      setRequestError('');
 
       const profileResult = await supabase
         .from('profiles')
@@ -214,45 +212,38 @@ function App() {
       const currentProfile = profileResult.data;
       setProfile(currentProfile);
 
+      let requestsQuery = supabase
+        .from('service_requests')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (currentProfile?.role !== 'admin') {
+        requestsQuery = requestsQuery.eq('client_id', session.user.id);
+      }
+
+      const requestsResult = await requestsQuery;
+      if (!active) return;
+
+      if (requestsResult.error) {
+        setRequestError(requestsResult.error.message);
+      } else {
+        setRequests(requestsResult.data || []);
+      }
+
       if (currentProfile?.role === 'admin') {
-        const [requestsResult, profilesResult] = await Promise.all([
-          supabase
-            .from('service_requests')
-            .select('*')
-            .order('created_at', { ascending: false }),
-          supabase
-            .from('profiles')
-            .select('id, full_name')
-        ]);
+        const profilesResult = await supabase
+          .from('profiles')
+          .select('id, full_name');
 
         if (!active) return;
-
-        if (requestsResult.error) {
-          setRequestError(requestsResult.error.message);
-        } else {
-          setRequests(requestsResult.data || []);
-        }
 
         if (profilesResult.error) {
-          setAuthError(profilesResult.error.message);
+          setRequestError(profilesResult.error.message);
         } else {
-          setAdminProfiles(profilesResult.data || []);
+          setClientProfiles(profilesResult.data || []);
         }
       } else {
-        const requestsResult = await supabase
-          .from('service_requests')
-          .select('*')
-          .eq('client_id', session.user.id)
-          .order('created_at', { ascending: false });
-
-        if (!active) return;
-
-        if (requestsResult.error) {
-          setRequestError(requestsResult.error.message);
-        } else {
-          setRequests(requestsResult.data || []);
-        }
-        setAdminProfiles([]);
+        setClientProfiles([]);
       }
 
       setRequestsLoading(false);
@@ -304,6 +295,26 @@ function App() {
     if (error) setAuthError(error.message);
   }
 
+  async function handleStatusChange(requestId, newStatus) {
+    setStatusSaving(requestId);
+    setRequestError('');
+
+    const { error } = await supabase
+      .from('service_requests')
+      .update({ status: newStatus })
+      .eq('id', requestId);
+
+    if (error) {
+      setRequestError(error.message);
+    } else {
+      setRequests(previous => previous.map(item =>
+        item.id === requestId ? { ...item, status: newStatus } : item
+      ));
+    }
+
+    setStatusSaving(null);
+  }
+
   async function handleSignOut() {
     setAuthError('');
     const { error } = await supabase.auth.signOut();
@@ -314,26 +325,6 @@ function App() {
       setAuthMessage(fr ? 'Vous êtes déconnecté.' : 'You are signed out.');
       setAuthForm({ fullName: '', email: '', password: '' });
     }
-  }
-
-  async function handleAdminStatusChange(requestId, newStatus) {
-    setRequestError('');
-
-    const { error } = await supabase
-      .from('service_requests')
-      .update({ status: newStatus })
-      .eq('id', requestId);
-
-    if (error) {
-      setRequestError(error.message);
-      return;
-    }
-
-    setRequests(previous =>
-      previous.map(item =>
-        item.id === requestId ? { ...item, status: newStatus } : item
-      )
-    );
   }
 
   async function handleRequestSubmit(event) {
@@ -491,7 +482,7 @@ function App() {
           </div>
         </section>
 
-        <section className="services section" id="services">
+                <section className="services section" id="services">
           <div className="section-head">
             <div className="eyebrow">NOS DOMAINES</div>
             <h2>{copy.services}</h2>
@@ -652,7 +643,7 @@ function App() {
           </form>
         </section>
 
-        <section className="client-area section" id="espace-client">
+                <section className="client-area section" id="espace-client">
           <div className="section-head">
             <div className="eyebrow">
               {fr ? 'VOTRE ESPACE PERSONNEL' : 'YOUR PERSONAL AREA'}
@@ -765,9 +756,7 @@ function App() {
               <div className="dashboard-heading">
                 <div>
                   <div className="eyebrow">
-                    {profile?.role === 'admin'
-                      ? (fr ? 'ESPACE ADMINISTRATEUR' : 'ADMINISTRATOR AREA')
-                      : (fr ? 'BIENVENUE' : 'WELCOME')}
+                    {fr ? 'BIENVENUE' : 'WELCOME'}
                   </div>
                   <h3>{profile?.full_name || session.user.email}</h3>
                   <p>{session.user.email}</p>
@@ -785,59 +774,67 @@ function App() {
                 <div className="dashboard-panel admin-panel">
                   <div className="request-heading">
                     <div>
-                      <div className="eyebrow">{fr ? 'GESTION' : 'MANAGEMENT'}</div>
                       <h3>{fr ? 'Demandes des clients' : 'Client requests'}</h3>
+                      <p>{fr ? 'Vue administrateur : toutes les demandes reçues.' : 'Administrator view: all received requests.'}</p>
                     </div>
                     <span>{requests.length}</span>
                   </div>
-
-                  <p>
-                    {fr
-                      ? 'Consultez les demandes reçues et mettez à jour leur état de traitement.'
-                      : 'Review incoming requests and update their processing status.'}
-                  </p>
 
                   {requestError && <p className="form-error">{requestError}</p>}
 
                   {requestsLoading ? (
                     <p>{fr ? 'Chargement des demandes…' : 'Loading requests…'}</p>
                   ) : requests.length === 0 ? (
-                    <p className="empty-state">
-                      {fr ? 'Aucune demande client pour le moment.' : 'There are no client requests yet.'}
-                    </p>
+                    <p className="empty-state">{fr ? 'Aucune demande client pour le moment.' : 'No client requests yet.'}</p>
                   ) : (
                     <div className="request-list">
                       {requests.map(item => {
-                        const clientProfile = adminProfiles.find(person => person.id === item.client_id);
+                        const client = clientProfiles.find(person => person.id === item.client_id);
                         return (
                           <article className="request-item admin-request-item" key={item.id}>
                             <div className="request-item-top">
                               <b>{item.service}</b>
-                              <span className={`status status-${item.status}`}>
-                                {statusLabel(item.status)}
-                              </span>
+                              <span className={`status status-${item.status}`}>{statusLabel(item.status)}</span>
                             </div>
 
                             <p>
                               <strong>{fr ? 'Client : ' : 'Client: '}</strong>
-                              {clientProfile?.full_name || (fr ? 'Nom non renseigné' : 'Name not provided')}
+                              {client?.full_name || (fr ? 'Nom non renseigné' : 'Name not provided')}
                             </p>
-                            {item.level && <p><strong>{fr ? 'Niveau : ' : 'Level: '}</strong>{item.level}</p>}
-                            {item.subject && <p><strong>{fr ? 'Matière : ' : 'Subject: '}</strong>{item.subject}</p>}
-                            {item.preferred_mode && <p><strong>{fr ? 'Modalité : ' : 'Format: '}</strong>{item.preferred_mode}</p>}
-                            {item.resource_type && <p><strong>{fr ? 'Ressource : ' : 'Resource: '}</strong>{item.resource_type}</p>}
-                            {item.profession && <p><strong>{fr ? 'Domaine : ' : 'Field: '}</strong>{item.profession}</p>}
+
+                            {item.level && (
+                              <p><strong>{fr ? 'Niveau : ' : 'Level: '}</strong>{item.level}</p>
+                            )}
+
+                            {item.subject && (
+                              <p><strong>{fr ? 'Matière : ' : 'Subject: '}</strong>{item.subject}</p>
+                            )}
+
+                            {item.preferred_mode && (
+                              <p><strong>{fr ? 'Modalité : ' : 'Format: '}</strong>{item.preferred_mode}</p>
+                            )}
+
+                            {item.resource_type && (
+                              <p><strong>{fr ? 'Ressource : ' : 'Resource: '}</strong>{item.resource_type}</p>
+                            )}
+
+                            {item.profession && (
+                              <p><strong>{fr ? 'Profession : ' : 'Profession: '}</strong>{item.profession}</p>
+                            )}
+
                             <p>{item.description}</p>
+
                             <small>
                               {fr ? 'Reçue le ' : 'Received on '}
                               {new Date(item.created_at).toLocaleDateString(fr ? 'fr-FR' : 'en-GB')}
                             </small>
 
                             <label className="admin-status-control">
-                              {fr ? 'État de la demande' : 'Request status'}
+                              {fr ? 'Modifier le statut' : 'Update status'}
                               <select
                                 value={item.status}
-                                onChange={event => handleAdminStatusChange(item.id, event.target.value)}
+                                disabled={statusSaving === item.id}
+                                onChange={e => handleStatusChange(item.id, e.target.value)}
                               >
                                 <option value="pending">{fr ? 'En attente' : 'Pending'}</option>
                                 <option value="reviewing">{fr ? 'À l’étude' : 'Under review'}</option>
@@ -854,152 +851,152 @@ function App() {
                   )}
                 </div>
               ) : (
-              <div className="dashboard-grid">
-                <div className="dashboard-panel">
-                  <h3>{fr ? 'Nouvelle demande' : 'New request'}</h3>
-                  <p>
-                    {fr
-                      ? 'Présentez votre besoin. Vous pourrez suivre son traitement ici.'
-                      : 'Describe what you need. You can follow its progress here.'}
-                  </p>
+                <div className="dashboard-grid">
+                  <div className="dashboard-panel">
+                    <h3>{fr ? 'Nouvelle demande' : 'New request'}</h3>
+                    <p>
+                      {fr
+                        ? 'Présentez votre besoin. Vous pourrez suivre son traitement ici.'
+                        : 'Describe what you need. You can follow its progress here.'}
+                    </p>
 
-                  <form className="auth-form" onSubmit={handleRequestSubmit}>
-                    <label>
-                      {copy.service}
-                      <select
-                        value={requestForm.service}
-                        onChange={e => updateRequest('service', e.target.value)}
-                      >
-                        <option value="Accompagnement éducatif">{copy.education}</option>
-                        <option value="Recherche documentaire">{copy.research}</option>
-                        <option value="Appui professionnel">{copy.professional}</option>
-                      </select>
-                    </label>
-
-                    {requestForm.service === 'Accompagnement éducatif' && (
-                      <>
-                        <label>
-                          {copy.level}
-                          <select
-                            value={requestForm.level}
-                            onChange={e => updateRequest('level', e.target.value)}
-                          >
-                            <option value="">{fr ? 'Choisir un niveau' : 'Choose a level'}</option>
-                            {copy.levelsList.map(item => <option key={item}>{item}</option>)}
-                          </select>
-                        </label>
-
-                        <label>
-                          {copy.subject}
-                          <select
-                            value={requestForm.subject}
-                            onChange={e => updateRequest('subject', e.target.value)}
-                          >
-                            <option value="">{fr ? 'Choisir une matière' : 'Choose a subject'}</option>
-                            {copy.subjects.map(item => <option key={item}>{item}</option>)}
-                          </select>
-                        </label>
-
-                        <label>
-                          {copy.mode}
-                          <select
-                            value={requestForm.preferred_mode}
-                            onChange={e => updateRequest('preferred_mode', e.target.value)}
-                          >
-                            <option value="">{fr ? 'Choisir une modalité' : 'Choose a format'}</option>
-                            <option value="À distance">{copy.online}</option>
-                            <option value="Présentiel">{copy.inPerson}</option>
-                          </select>
-                        </label>
-                      </>
-                    )}
-
-                    {requestForm.service === 'Recherche documentaire' && (
+                    <form className="auth-form" onSubmit={handleRequestSubmit}>
                       <label>
-                        {copy.resource}
+                        {copy.service}
                         <select
-                          value={requestForm.resource_type}
-                          onChange={e => updateRequest('resource_type', e.target.value)}
+                          value={requestForm.service}
+                          onChange={e => updateRequest('service', e.target.value)}
                         >
-                          <option value="">{fr ? 'Choisir un type' : 'Choose a type'}</option>
-                          {copy.resources.map(item => <option key={item}>{item}</option>)}
+                          <option value="Accompagnement éducatif">{copy.education}</option>
+                          <option value="Recherche documentaire">{copy.research}</option>
+                          <option value="Appui professionnel">{copy.professional}</option>
                         </select>
                       </label>
-                    )}
 
-                    {requestForm.service === 'Appui professionnel' && (
+                      {requestForm.service === 'Accompagnement éducatif' && (
+                        <>
+                          <label>
+                            {copy.level}
+                            <select
+                              value={requestForm.level}
+                              onChange={e => updateRequest('level', e.target.value)}
+                            >
+                              <option value="">{fr ? 'Choisir un niveau' : 'Choose a level'}</option>
+                              {copy.levelsList.map(item => <option key={item}>{item}</option>)}
+                            </select>
+                          </label>
+
+                          <label>
+                            {copy.subject}
+                            <select
+                              value={requestForm.subject}
+                              onChange={e => updateRequest('subject', e.target.value)}
+                            >
+                              <option value="">{fr ? 'Choisir une matière' : 'Choose a subject'}</option>
+                              {copy.subjects.map(item => <option key={item}>{item}</option>)}
+                            </select>
+                          </label>
+
+                          <label>
+                            {copy.mode}
+                            <select
+                              value={requestForm.preferred_mode}
+                              onChange={e => updateRequest('preferred_mode', e.target.value)}
+                            >
+                              <option value="">{fr ? 'Choisir une modalité' : 'Choose a format'}</option>
+                              <option value="À distance">{copy.online}</option>
+                              <option value="Présentiel">{copy.inPerson}</option>
+                            </select>
+                          </label>
+                        </>
+                      )}
+
+                      {requestForm.service === 'Recherche documentaire' && (
+                        <label>
+                          {copy.resource}
+                          <select
+                            value={requestForm.resource_type}
+                            onChange={e => updateRequest('resource_type', e.target.value)}
+                          >
+                            <option value="">{fr ? 'Choisir un type' : 'Choose a type'}</option>
+                            {copy.resources.map(item => <option key={item}>{item}</option>)}
+                          </select>
+                        </label>
+                      )}
+
+                      {requestForm.service === 'Appui professionnel' && (
+                        <label>
+                          {copy.profession}
+                          <input
+                            value={requestForm.profession}
+                            onChange={e => updateRequest('profession', e.target.value)}
+                          />
+                        </label>
+                      )}
+
                       <label>
-                        {copy.profession}
-                        <input
-                          value={requestForm.profession}
-                          onChange={e => updateRequest('profession', e.target.value)}
+                        {copy.need}
+                        <textarea
+                          rows="5"
+                          required
+                          value={requestForm.description}
+                          onChange={e => updateRequest('description', e.target.value)}
+                          placeholder={copy.placeholder}
                         />
                       </label>
-                    )}
 
-                    <label>
-                      {copy.need}
-                      <textarea
-                        rows="5"
-                        required
-                        value={requestForm.description}
-                        onChange={e => updateRequest('description', e.target.value)}
-                        placeholder={copy.placeholder}
-                      />
-                    </label>
+                      {requestError && <p className="form-error">{requestError}</p>}
+                      {requestMessage && <p className="form-message">{requestMessage}</p>}
 
-                    {requestError && <p className="form-error">{requestError}</p>}
-                    {requestMessage && <p className="form-message">{requestMessage}</p>}
-
-                    <button className="btn primary" type="submit" disabled={requestLoading}>
-                      {requestLoading
-                        ? (fr ? 'Envoi en cours…' : 'Sending…')
-                        : (fr ? 'Envoyer ma demande' : 'Submit my request')}
-                      <Send size={16} />
-                    </button>
-                  </form>
-                </div>
-
-                <div className="dashboard-panel">
-                  <div className="request-heading">
-                    <h3>{fr ? 'Mes demandes' : 'My requests'}</h3>
-                    <span>{requests.length}</span>
+                      <button className="btn primary" type="submit" disabled={requestLoading}>
+                        {requestLoading
+                          ? (fr ? 'Envoi en cours…' : 'Sending…')
+                          : (fr ? 'Envoyer ma demande' : 'Submit my request')}
+                        <Send size={16} />
+                      </button>
+                    </form>
                   </div>
 
-                  {requestsLoading ? (
-                    <p>{fr ? 'Chargement des demandes…' : 'Loading requests…'}</p>
-                  ) : requests.length === 0 ? (
-                    <p className="empty-state">
-                      {fr
-                        ? 'Vous n’avez pas encore envoyé de demande depuis votre espace.'
-                        : 'You have not submitted a request from your account yet.'}
-                    </p>
-                  ) : (
-                    <div className="request-list">
-                      {requests.map(item => (
-                        <article className="request-item" key={item.id}>
-                          <div className="request-item-top">
-                            <b>{item.service}</b>
-                            <span className={`status status-${item.status}`}>
-                              {statusLabel(item.status)}
-                            </span>
-                          </div>
-
-                          {item.subject && <p>{item.subject}</p>}
-                          <p>{item.description}</p>
-
-                          <small>
-                            {fr ? 'Envoyée le ' : 'Submitted on '}
-                            {new Date(item.created_at).toLocaleDateString(
-                              fr ? 'fr-FR' : 'en-GB'
-                            )}
-                          </small>
-                        </article>
-                      ))}
+                  <div className="dashboard-panel">
+                    <div className="request-heading">
+                      <h3>{fr ? 'Mes demandes' : 'My requests'}</h3>
+                      <span>{requests.length}</span>
                     </div>
-                  )}
+
+                    {requestsLoading ? (
+                      <p>{fr ? 'Chargement des demandes…' : 'Loading requests…'}</p>
+                    ) : requests.length === 0 ? (
+                      <p className="empty-state">
+                        {fr
+                          ? 'Vous n’avez pas encore envoyé de demande depuis votre espace.'
+                          : 'You have not submitted a request from your account yet.'}
+                      </p>
+                    ) : (
+                      <div className="request-list">
+                        {requests.map(item => (
+                          <article className="request-item" key={item.id}>
+                            <div className="request-item-top">
+                              <b>{item.service}</b>
+                              <span className={`status status-${item.status}`}>
+                                {statusLabel(item.status)}
+                              </span>
+                            </div>
+
+                            {item.subject && <p>{item.subject}</p>}
+                            <p>{item.description}</p>
+
+                            <small>
+                              {fr ? 'Envoyée le ' : 'Submitted on '}
+                              {new Date(item.created_at).toLocaleDateString(
+                                fr ? 'fr-FR' : 'en-GB'
+                              )}
+                            </small>
+                          </article>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
               )}
             </div>
           )}
