@@ -19,6 +19,7 @@ function App() {
   const [authLoading, setAuthLoading] = useState(true);
   const [profile, setProfile] = useState(null);
   const [requests, setRequests] = useState([]);
+  const [adminProfiles, setAdminProfiles] = useState([]);
   const [authMode, setAuthMode] = useState('login');
   const [authMessage, setAuthMessage] = useState('');
   const [authError, setAuthError] = useState('');
@@ -185,6 +186,7 @@ function App() {
     if (!session?.user) {
       setProfile(null);
       setRequests([]);
+      setAdminProfiles([]);
       return;
     }
 
@@ -192,32 +194,65 @@ function App() {
 
     async function loadClientArea() {
       setRequestsLoading(true);
+      setAuthError('');
+      setRequestError('');
 
-      const [profileResult, requestsResult] = await Promise.all([
-        supabase
-          .from('profiles')
-          .select('full_name, role')
-          .eq('id', session.user.id)
-          .maybeSingle(),
-        supabase
-          .from('service_requests')
-          .select('*')
-          .eq('client_id', session.user.id)
-          .order('created_at', { ascending: false })
-      ]);
+      const profileResult = await supabase
+        .from('profiles')
+        .select('full_name, role')
+        .eq('id', session.user.id)
+        .maybeSingle();
 
       if (!active) return;
 
       if (profileResult.error) {
         setAuthError(profileResult.error.message);
-      } else {
-        setProfile(profileResult.data);
+        setRequestsLoading(false);
+        return;
       }
 
-      if (requestsResult.error) {
-        setRequestError(requestsResult.error.message);
+      const currentProfile = profileResult.data;
+      setProfile(currentProfile);
+
+      if (currentProfile?.role === 'admin') {
+        const [requestsResult, profilesResult] = await Promise.all([
+          supabase
+            .from('service_requests')
+            .select('*')
+            .order('created_at', { ascending: false }),
+          supabase
+            .from('profiles')
+            .select('id, full_name')
+        ]);
+
+        if (!active) return;
+
+        if (requestsResult.error) {
+          setRequestError(requestsResult.error.message);
+        } else {
+          setRequests(requestsResult.data || []);
+        }
+
+        if (profilesResult.error) {
+          setAuthError(profilesResult.error.message);
+        } else {
+          setAdminProfiles(profilesResult.data || []);
+        }
       } else {
-        setRequests(requestsResult.data || []);
+        const requestsResult = await supabase
+          .from('service_requests')
+          .select('*')
+          .eq('client_id', session.user.id)
+          .order('created_at', { ascending: false });
+
+        if (!active) return;
+
+        if (requestsResult.error) {
+          setRequestError(requestsResult.error.message);
+        } else {
+          setRequests(requestsResult.data || []);
+        }
+        setAdminProfiles([]);
       }
 
       setRequestsLoading(false);
@@ -279,6 +314,26 @@ function App() {
       setAuthMessage(fr ? 'Vous êtes déconnecté.' : 'You are signed out.');
       setAuthForm({ fullName: '', email: '', password: '' });
     }
+  }
+
+  async function handleAdminStatusChange(requestId, newStatus) {
+    setRequestError('');
+
+    const { error } = await supabase
+      .from('service_requests')
+      .update({ status: newStatus })
+      .eq('id', requestId);
+
+    if (error) {
+      setRequestError(error.message);
+      return;
+    }
+
+    setRequests(previous =>
+      previous.map(item =>
+        item.id === requestId ? { ...item, status: newStatus } : item
+      )
+    );
   }
 
   async function handleRequestSubmit(event) {
@@ -710,7 +765,9 @@ function App() {
               <div className="dashboard-heading">
                 <div>
                   <div className="eyebrow">
-                    {fr ? 'BIENVENUE' : 'WELCOME'}
+                    {profile?.role === 'admin'
+                      ? (fr ? 'ESPACE ADMINISTRATEUR' : 'ADMINISTRATOR AREA')
+                      : (fr ? 'BIENVENUE' : 'WELCOME')}
                   </div>
                   <h3>{profile?.full_name || session.user.email}</h3>
                   <p>{session.user.email}</p>
@@ -724,6 +781,79 @@ function App() {
 
               {authError && <p className="form-error">{authError}</p>}
 
+              {profile?.role === 'admin' ? (
+                <div className="dashboard-panel admin-panel">
+                  <div className="request-heading">
+                    <div>
+                      <div className="eyebrow">{fr ? 'GESTION' : 'MANAGEMENT'}</div>
+                      <h3>{fr ? 'Demandes des clients' : 'Client requests'}</h3>
+                    </div>
+                    <span>{requests.length}</span>
+                  </div>
+
+                  <p>
+                    {fr
+                      ? 'Consultez les demandes reçues et mettez à jour leur état de traitement.'
+                      : 'Review incoming requests and update their processing status.'}
+                  </p>
+
+                  {requestError && <p className="form-error">{requestError}</p>}
+
+                  {requestsLoading ? (
+                    <p>{fr ? 'Chargement des demandes…' : 'Loading requests…'}</p>
+                  ) : requests.length === 0 ? (
+                    <p className="empty-state">
+                      {fr ? 'Aucune demande client pour le moment.' : 'There are no client requests yet.'}
+                    </p>
+                  ) : (
+                    <div className="request-list">
+                      {requests.map(item => {
+                        const clientProfile = adminProfiles.find(person => person.id === item.client_id);
+                        return (
+                          <article className="request-item admin-request-item" key={item.id}>
+                            <div className="request-item-top">
+                              <b>{item.service}</b>
+                              <span className={`status status-${item.status}`}>
+                                {statusLabel(item.status)}
+                              </span>
+                            </div>
+
+                            <p>
+                              <strong>{fr ? 'Client : ' : 'Client: '}</strong>
+                              {clientProfile?.full_name || (fr ? 'Nom non renseigné' : 'Name not provided')}
+                            </p>
+                            {item.level && <p><strong>{fr ? 'Niveau : ' : 'Level: '}</strong>{item.level}</p>}
+                            {item.subject && <p><strong>{fr ? 'Matière : ' : 'Subject: '}</strong>{item.subject}</p>}
+                            {item.preferred_mode && <p><strong>{fr ? 'Modalité : ' : 'Format: '}</strong>{item.preferred_mode}</p>}
+                            {item.resource_type && <p><strong>{fr ? 'Ressource : ' : 'Resource: '}</strong>{item.resource_type}</p>}
+                            {item.profession && <p><strong>{fr ? 'Domaine : ' : 'Field: '}</strong>{item.profession}</p>}
+                            <p>{item.description}</p>
+                            <small>
+                              {fr ? 'Reçue le ' : 'Received on '}
+                              {new Date(item.created_at).toLocaleDateString(fr ? 'fr-FR' : 'en-GB')}
+                            </small>
+
+                            <label className="admin-status-control">
+                              {fr ? 'État de la demande' : 'Request status'}
+                              <select
+                                value={item.status}
+                                onChange={event => handleAdminStatusChange(item.id, event.target.value)}
+                              >
+                                <option value="pending">{fr ? 'En attente' : 'Pending'}</option>
+                                <option value="reviewing">{fr ? 'À l’étude' : 'Under review'}</option>
+                                <option value="accepted">{fr ? 'Acceptée' : 'Accepted'}</option>
+                                <option value="in_progress">{fr ? 'En cours' : 'In progress'}</option>
+                                <option value="completed">{fr ? 'Terminée' : 'Completed'}</option>
+                                <option value="rejected">{fr ? 'Refusée' : 'Declined'}</option>
+                              </select>
+                            </label>
+                          </article>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              ) : (
               <div className="dashboard-grid">
                 <div className="dashboard-panel">
                   <h3>{fr ? 'Nouvelle demande' : 'New request'}</h3>
@@ -870,6 +1000,7 @@ function App() {
                   )}
                 </div>
               </div>
+              )}
             </div>
           )}
         </section>
