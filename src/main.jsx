@@ -1085,4 +1085,62 @@ function App() {
                     </form>
                   </div>
 
-                  <div className="dashboar
+                  <div className="dashboard-panel">
+                    <div className="request-heading">
+                      <h3>{fr ? 'Mes demandes' : 'My requests'}</h3>
+                      <span>{requests.length}</span>
+                    </div>
+
+                    {requestsLoading ? (
+                      <p>{fr ? 'Chargement des demandes…' : 'Loading requests…'}</p>
+                    ) : requests.length === 0 ? (
+                      <p className="empty-state">
+                        {fr
+                          ? 'Vous n’avez pas encore envoyé de demande depuis votre espace.'
+                          : 'You have not submitted a request from your account yet.'}
+                      </p>
+                    ) : (
+                      <div className="request-list">
+                        {requests.map(item => (
+                          <article className="request-item" key={item.id}>
+                            <div className="request-item-top">
+                              <b>{item.service}</b>
+                              <span className={`status status-${item.status}`}>
+                                {statusLabel(item.status)}
+                              </span>
+                            </div>
+
+                            {item.subject && <p>{item.subject}</p>}
+                            <p>{item.description}</p>
+
+                            <small>
+                              {fr ? 'Envoyée le ' : 'Submitted on '}
+                              {new Date(item.created_at).toLocaleDateString(
+                                fr ? 'fr-FR' : 'en-GB'
+                              )}
+                            </small>
+                          </article>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </section>
+      </main>
+
+      <footer>
+        <a className="brand light" href="#home">
+          {portrait}
+          <span>BERGER-LE-BONHEUR<small>RAWAGO</small></span>
+        </a>
+        <p>{copy.footer}</p>
+        <span>© {new Date().getFullYear()} Berger-Le-Bonheur RAWAGO</span>
+      </footer>
+    </>
+  );
+}
+
+createRoot(document.getElementById('root')).render(<App />);
