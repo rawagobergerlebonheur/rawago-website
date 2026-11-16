@@ -19,6 +19,7 @@ function App() {
   const [profile, setProfile] = useState(null);
   const [requests, setRequests] = useState([]);
   const [clientProfiles, setClientProfiles] = useState([]);
+  const [selectedClientId, setSelectedClientId] = useState(null);
   const [statusSaving, setStatusSaving] = useState(null);
   const [authMode, setAuthMode] = useState('login');
   const [authMessage, setAuthMessage] = useState('');
@@ -233,7 +234,7 @@ function App() {
       if (currentProfile?.role === 'admin') {
         const profilesResult = await supabase
           .from('profiles')
-          .select('id, full_name');
+          .select('id, full_name, country, created_at');
 
         if (!active) return;
 
@@ -802,6 +803,15 @@ function App() {
                               {client?.full_name || (fr ? 'Nom non renseigné' : 'Name not provided')}
                             </p>
 
+                            <button
+                              className="btn secondary dark-button"
+                              type="button"
+                              onClick={() => setSelectedClientId(item.client_id)}
+                              style={{ margin: '8px 0 12px', cursor: 'pointer' }}
+                            >
+                              {fr ? 'Voir la fiche client' : 'View client file'}
+                            </button>
+
                             {item.level && (
                               <p><strong>{fr ? 'Niveau : ' : 'Level: '}</strong>{item.level}</p>
                             )}
@@ -849,6 +859,84 @@ function App() {
                       })}
                     </div>
                   )}
+
+                  {selectedClientId && (() => {
+                    const selectedClient = clientProfiles.find(
+                      person => person.id === selectedClientId
+                    );
+                    const clientRequests = requests.filter(
+                      item => item.client_id === selectedClientId
+                    );
+
+                    return (
+                      <div
+                        className="dashboard-panel"
+                        style={{
+                          marginTop: '24px',
+                          border: '1px solid #dce7eb',
+                          borderRadius: '12px',
+                          padding: '22px',
+                          background: '#ffffff'
+                        }}
+                      >
+                        <div className="request-heading">
+                          <div>
+                            <h3>{fr ? 'Fiche client' : 'Client file'}</h3>
+                            <p>
+                              {selectedClient?.full_name ||
+                                (fr ? 'Nom non renseigné' : 'Name not provided')}
+                            </p>
+                          </div>
+                          <button
+                            className="btn secondary dark-button"
+                            type="button"
+                            onClick={() => setSelectedClientId(null)}
+                          >
+                            {fr ? 'Fermer' : 'Close'}
+                          </button>
+                        </div>
+
+                        <p>
+                          <strong>{fr ? 'Pays : ' : 'Country: '}</strong>
+                          {selectedClient?.country || (fr ? 'Non renseigné' : 'Not provided')}
+                        </p>
+                        <p>
+                          <strong>{fr ? 'Nombre de demandes : ' : 'Number of requests: '}</strong>
+                          {clientRequests.length}
+                        </p>
+                        <p>
+                          <strong>{fr ? 'Identifiant du compte : ' : 'Account ID: '}</strong>
+                          <span style={{ overflowWrap: 'anywhere' }}>{selectedClientId}</span>
+                        </p>
+
+                        <h4>{fr ? 'Historique des demandes' : 'Request history'}</h4>
+                        {clientRequests.map(clientRequest => (
+                          <article
+                            className="request-item"
+                            key={clientRequest.id}
+                            style={{ marginTop: '12px' }}
+                          >
+                            <div className="request-item-top">
+                              <b>{clientRequest.service}</b>
+                              <span className={`status status-${clientRequest.status}`}>
+                                {statusLabel(clientRequest.status)}
+                              </span>
+                            </div>
+                            {clientRequest.level && <p><strong>{fr ? 'Niveau : ' : 'Level: '}</strong>{clientRequest.level}</p>}
+                            {clientRequest.subject && <p><strong>{fr ? 'Matière : ' : 'Subject: '}</strong>{clientRequest.subject}</p>}
+                            {clientRequest.preferred_mode && <p><strong>{fr ? 'Modalité : ' : 'Format: '}</strong>{clientRequest.preferred_mode}</p>}
+                            {clientRequest.resource_type && <p><strong>{fr ? 'Ressource : ' : 'Resource: '}</strong>{clientRequest.resource_type}</p>}
+                            {clientRequest.profession && <p><strong>{fr ? 'Profession : ' : 'Profession: '}</strong>{clientRequest.profession}</p>}
+                            <p>{clientRequest.description}</p>
+                            <small>
+                              {fr ? 'Reçue le ' : 'Received on '}
+                              {new Date(clientRequest.created_at).toLocaleDateString(fr ? 'fr-FR' : 'en-GB')}
+                            </small>
+                          </article>
+                        ))}
+                      </div>
+                    );
+                  })()}
                 </div>
               ) : (
                 <div className="dashboard-grid">
