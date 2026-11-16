@@ -26,6 +26,7 @@ function App() {
   const [authError, setAuthError] = useState('');
   const [authForm, setAuthForm] = useState({
     fullName: '',
+    phone: '',
     email: '',
     password: ''
   });
@@ -234,7 +235,7 @@ function App() {
       if (currentProfile?.role === 'admin') {
         const profilesResult = await supabase
           .from('profiles')
-          .select('id, full_name, country, created_at');
+          .select('id, full_name, phone, country, created_at');
 
         if (!active) return;
 
@@ -267,7 +268,7 @@ function App() {
         email: authForm.email,
         password: authForm.password,
         options: {
-          data: { full_name: authForm.fullName }
+          data: { full_name: authForm.fullName, phone: authForm.phone.trim() }
         }
       });
 
@@ -699,16 +700,35 @@ function App() {
 
               <form className="auth-form" onSubmit={handleAuthSubmit}>
                 {authMode === 'signup' && (
-                  <label>
-                    {fr ? 'Nom complet' : 'Full name'}
-                    <input
-                      type="text"
-                      required
-                      autoComplete="name"
-                      value={authForm.fullName}
-                      onChange={e => updateAuth('fullName', e.target.value)}
-                    />
-                  </label>
+                  <>
+                    <label>
+                      {fr ? 'Nom complet' : 'Full name'}
+                      <input
+                        type="text"
+                        required
+                        autoComplete="name"
+                        value={authForm.fullName}
+                        onChange={e => updateAuth('fullName', e.target.value)}
+                      />
+                    </label>
+
+                    <label>
+                      {fr ? 'Numéro WhatsApp avec indicatif du pays' : 'WhatsApp number with country code'}
+                      <input
+                        type="tel"
+                        required
+                        autoComplete="tel"
+                        placeholder="+221 77 123 45 67"
+                        value={authForm.phone}
+                        onChange={e => updateAuth('phone', e.target.value)}
+                      />
+                      <small>
+                        {fr
+                          ? 'Exemple : +221771234567. Ajoutez l’indicatif international de votre pays.'
+                          : 'Example: +221771234567. Include your country’s international calling code.'}
+                      </small>
+                    </label>
+                  </>
                 )}
 
                 <label>
@@ -901,6 +921,26 @@ function App() {
                           {selectedClient?.country || (fr ? 'Non renseigné' : 'Not provided')}
                         </p>
                         <p>
+                          <strong>{fr ? 'Téléphone : ' : 'Phone: '}</strong>
+                          {selectedClient?.phone || (fr ? 'Non renseigné' : 'Not provided')}
+                        </p>
+                        {selectedClient?.phone && (
+                          <a
+                            className="btn primary"
+                            href={`https://wa.me/${selectedClient.phone.replace(/\D/g, '')}?text=${encodeURIComponent(
+                              fr
+                                ? `Bonjour ${selectedClient.full_name || ''}, je vous contacte au sujet de votre demande auprès de Berger-Le-Bonheur RAWAGO.`
+                                : `Hello ${selectedClient.full_name || ''}, I am contacting you about your request to Berger-Le-Bonheur RAWAGO.`
+                            )}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', margin: '4px 0 14px', textDecoration: 'none' }}
+                          >
+                            <MessageCircle size={17} />
+                            {fr ? 'Contacter sur WhatsApp' : 'Contact on WhatsApp'}
+                          </a>
+                        )}
+                        <p>
                           <strong>{fr ? 'Nombre de demandes : ' : 'Number of requests: '}</strong>
                           {clientRequests.length}
                         </p>
@@ -1045,62 +1085,4 @@ function App() {
                     </form>
                   </div>
 
-                  <div className="dashboard-panel">
-                    <div className="request-heading">
-                      <h3>{fr ? 'Mes demandes' : 'My requests'}</h3>
-                      <span>{requests.length}</span>
-                    </div>
-
-                    {requestsLoading ? (
-                      <p>{fr ? 'Chargement des demandes…' : 'Loading requests…'}</p>
-                    ) : requests.length === 0 ? (
-                      <p className="empty-state">
-                        {fr
-                          ? 'Vous n’avez pas encore envoyé de demande depuis votre espace.'
-                          : 'You have not submitted a request from your account yet.'}
-                      </p>
-                    ) : (
-                      <div className="request-list">
-                        {requests.map(item => (
-                          <article className="request-item" key={item.id}>
-                            <div className="request-item-top">
-                              <b>{item.service}</b>
-                              <span className={`status status-${item.status}`}>
-                                {statusLabel(item.status)}
-                              </span>
-                            </div>
-
-                            {item.subject && <p>{item.subject}</p>}
-                            <p>{item.description}</p>
-
-                            <small>
-                              {fr ? 'Envoyée le ' : 'Submitted on '}
-                              {new Date(item.created_at).toLocaleDateString(
-                                fr ? 'fr-FR' : 'en-GB'
-                              )}
-                            </small>
-                          </article>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-        </section>
-      </main>
-
-      <footer>
-        <a className="brand light" href="#home">
-          {portrait}
-          <span>BERGER-LE-BONHEUR<small>RAWAGO</small></span>
-        </a>
-        <p>{copy.footer}</p>
-        <span>© {new Date().getFullYear()} Berger-Le-Bonheur RAWAGO</span>
-      </footer>
-    </>
-  );
-}
-
-createRoot(document.getElementById('root')).render(<App />);
+                  <div className="dashboar
