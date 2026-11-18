@@ -686,6 +686,93 @@ function Library() {
           .library-page .library-book-grid { grid-template-columns: 1fr; }
           .library-page .library-book-card .library-book-cover { height: 210px; }
         }
+        /* Correctifs mobiles : titres, hero et pagination */
+        @media (max-width: 680px) {
+          .library-page {
+            width: 100%;
+            max-width: 100%;
+            overflow-x: clip;
+            padding-left: 18px;
+            padding-right: 18px;
+          }
+          .library-page .library-hero {
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            gap: 24px;
+            width: 100%;
+            min-width: 0;
+          }
+          .library-page .section-head,
+          .library-page .section-head h1,
+          .library-page .section-head p {
+            width: 100%;
+            max-width: 100%;
+            min-width: 0;
+            overflow: visible;
+            overflow-wrap: anywhere;
+            word-break: normal;
+          }
+          .library-page .section-head h1 {
+            display: block;
+            font-size: clamp(32px, 9vw, 42px);
+            line-height: 1.12;
+            letter-spacing: -.035em;
+            white-space: normal;
+            text-wrap: pretty;
+          }
+          .library-page .library-hero-visual {
+            width: 100%;
+            min-width: 0;
+            min-height: 220px;
+            aspect-ratio: 1.35 / 1;
+          }
+          .library-page .library-hero-visual img {
+            width: 100%;
+            height: 100%;
+            min-height: 220px;
+            object-fit: cover;
+          }
+          .library-page .library-pagination {
+            display: grid !important;
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+            align-items: center;
+            justify-content: stretch;
+            gap: 10px !important;
+            width: 100%;
+            margin: 24px 0 !important;
+          }
+          .library-page .library-pagination > span {
+            grid-column: 1 / -1;
+            grid-row: 1;
+            text-align: center;
+            padding: 4px 0 8px;
+            line-height: 1.5;
+          }
+          .library-page .library-pagination > button {
+            width: 100%;
+            min-width: 0;
+            min-height: 44px;
+            justify-content: center;
+            padding: 10px 8px;
+            white-space: nowrap;
+            font-size: 12px;
+          }
+          .library-page .library-pagination > button:first-of-type { grid-column: 1; grid-row: 2; }
+          .library-page .library-pagination > button:last-of-type { grid-column: 2; grid-row: 2; }
+          .library-page .library-category-heading {
+            align-items: flex-start;
+            flex-wrap: wrap;
+          }
+          .library-page .library-category-heading h2 {
+            min-width: 0;
+            font-size: clamp(21px, 6vw, 26px);
+          }
+        }
+        @media (max-width: 380px) {
+          .library-page { padding-left: 14px; padding-right: 14px; }
+          .library-page .section-head h1 { font-size: 32px; }
+        }
       `}</style>
 
       <section className="library-hero" aria-label="Présentation de la bibliothèque">
