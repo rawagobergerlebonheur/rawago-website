@@ -487,12 +487,33 @@ function Library() {
           letter-spacing: .17em;
         }
         .library-page .section-head h1 {
+          display: block;
+          width: 100%;
+          max-width: 100%;
+          min-width: 0;
+          box-sizing: border-box;
           margin: 14px 0 12px;
           color: var(--library-ink);
           font-size: clamp(34px, 5vw, 56px);
-          line-height: 1.04;
+          line-height: 1.08;
           letter-spacing: -.045em;
           font-weight: 750;
+          white-space: normal;
+          overflow-wrap: anywhere;
+          word-break: normal;
+        }
+        .library-page .library-pagination {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          gap: 12px;
+          flex-wrap: wrap;
+          margin: 28px 0;
+        }
+        .library-page .library-pagination button:disabled {
+          opacity: .42;
+          cursor: not-allowed;
+          transform: none;
         }
         .library-page .section-head p {
           max-width: 650px;
@@ -667,11 +688,34 @@ function Library() {
         }
         .library-page .library-request-panel .library-contact-button:hover { transform: translateY(-2px); background: #eaf5f1; }
         @media (max-width: 680px) {
-          .library-page .library-hero { grid-template-columns: 1fr; gap: 22px; margin-bottom: 32px; }
-          .library-page .section-head { margin-bottom: 0; text-align: left; }
-          .library-page .section-head p { font-size: 14px; }
+          .library-page .library-hero {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr);
+            gap: 20px;
+            margin-bottom: 28px;
+          }
+          .library-page .section-head {
+            width: 100%;
+            max-width: 100%;
+            min-width: 0;
+            margin-bottom: 0;
+            text-align: left;
+          }
+          .library-page .section-head h1 {
+            font-size: clamp(29px, 8vw, 38px);
+            line-height: 1.1;
+            letter-spacing: -.04em;
+            max-width: 100%;
+          }
+          .library-page .section-head .eyebrow {
+            font-size: 9px;
+            letter-spacing: .13em;
+            line-height: 1.6;
+          }
+          .library-page .section-head p { font-size: 14px; line-height: 1.7; }
           .library-page .library-hero-visual,
           .library-page .library-hero-visual img { min-height: 220px; }
+          .library-page .library-hero-visual { border-radius: 18px; }
           .library-page .library-category-section { margin: 20px 0 24px; }
           .library-page .library-category-chip { min-height: 39px; padding: 9px 12px; font-size: 11px; }
           .library-page .library-book-grid { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 12px; }
@@ -681,97 +725,32 @@ function Library() {
           .library-page .library-book-author { font-size: 11px; }
           .library-page .library-book-description { font-size: 11px; }
           .library-page .library-book-card .library-order-button { min-height: 41px; padding: 9px 7px; font-size: 10px; }
+          .library-page .library-pagination {
+            display: grid;
+            grid-template-columns: auto minmax(0, 1fr) auto;
+            align-items: center;
+            gap: 7px;
+            width: 100%;
+            margin: 22px 0;
+          }
+          .library-page .library-pagination .library-category-chip {
+            min-height: 38px;
+            padding: 8px 9px;
+            font-size: 10px;
+            gap: 4px;
+          }
+          .library-page .library-pagination span {
+            min-width: 0;
+            text-align: center;
+            font-size: 10px !important;
+            line-height: 1.35;
+            white-space: normal;
+          }
+          .library-page .library-note { margin-top: 16px; }
         }
         @media (max-width: 380px) {
           .library-page .library-book-grid { grid-template-columns: 1fr; }
           .library-page .library-book-card .library-book-cover { height: 210px; }
-        }
-        /* Correctifs mobiles : titres, hero et pagination */
-        @media (max-width: 680px) {
-          .library-page {
-            width: 100%;
-            max-width: 100%;
-            overflow-x: clip;
-            padding-left: 18px;
-            padding-right: 18px;
-          }
-          .library-page .library-hero {
-            display: flex;
-            flex-direction: column;
-            align-items: stretch;
-            gap: 24px;
-            width: 100%;
-            min-width: 0;
-          }
-          .library-page .section-head,
-          .library-page .section-head h1,
-          .library-page .section-head p {
-            width: 100%;
-            max-width: 100%;
-            min-width: 0;
-            overflow: visible;
-            overflow-wrap: anywhere;
-            word-break: normal;
-          }
-          .library-page .section-head h1 {
-            display: block;
-            font-size: clamp(32px, 9vw, 42px);
-            line-height: 1.12;
-            letter-spacing: -.035em;
-            white-space: normal;
-            text-wrap: pretty;
-          }
-          .library-page .library-hero-visual {
-            width: 100%;
-            min-width: 0;
-            min-height: 220px;
-            aspect-ratio: 1.35 / 1;
-          }
-          .library-page .library-hero-visual img {
-            width: 100%;
-            height: 100%;
-            min-height: 220px;
-            object-fit: cover;
-          }
-          .library-page .library-pagination {
-            display: grid !important;
-            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-            align-items: center;
-            justify-content: stretch;
-            gap: 10px !important;
-            width: 100%;
-            margin: 24px 0 !important;
-          }
-          .library-page .library-pagination > span {
-            grid-column: 1 / -1;
-            grid-row: 1;
-            text-align: center;
-            padding: 4px 0 8px;
-            line-height: 1.5;
-          }
-          .library-page .library-pagination > button {
-            width: 100%;
-            min-width: 0;
-            min-height: 44px;
-            justify-content: center;
-            padding: 10px 8px;
-            white-space: nowrap;
-            font-size: 12px;
-          }
-          .library-page .library-pagination > button:first-of-type { grid-column: 1; grid-row: 2; }
-          .library-page .library-pagination > button:last-of-type { grid-column: 2; grid-row: 2; }
-          .library-page .library-category-heading {
-            align-items: flex-start;
-            flex-wrap: wrap;
-          }
-          .library-page .library-category-heading h2 {
-            min-width: 0;
-            font-size: clamp(21px, 6vw, 26px);
-          }
-        }
-        @media (max-width: 380px) {
-          .library-page { padding-left: 14px; padding-right: 14px; }
-          .library-page .section-head h1 { font-size: 32px; }
         }
       `}</style>
 
@@ -908,10 +887,26 @@ function Library() {
         )}
 
         {!loading && !error && filteredBooks.length > booksPerPage && (
-          <nav className="library-pagination" aria-label="Pagination du catalogue" style={{display:"flex",justifyContent:"center",alignItems:"center",gap:"12px",flexWrap:"wrap",margin:"28px 0"}}>
-            <button type="button" className="library-category-chip" disabled={currentPage === 1} onClick={() => setCurrentPage(page => Math.max(1, page - 1))}>← Précédent</button>
-            <span style={{color:"#52686a",fontSize:"13px"}}>Page {currentPage} sur {totalPages} · {filteredBooks.length} ouvrages</span>
-            <button type="button" className="library-category-chip" disabled={currentPage >= totalPages} onClick={() => setCurrentPage(page => Math.min(totalPages, page + 1))}>Suivant →</button>
+          <nav className="library-pagination" aria-label="Pagination du catalogue">
+            <button
+              type="button"
+              className="library-category-chip"
+              disabled={currentPage === 1}
+              onClick={() => setCurrentPage(page => Math.max(1, page - 1))}
+            >
+              <span aria-hidden="true">←</span> Précédent
+            </button>
+            <span style={{ color: "#52686a", fontSize: "13px" }}>
+              Page {currentPage} sur {totalPages} · {filteredBooks.length} ouvrages
+            </span>
+            <button
+              type="button"
+              className="library-category-chip"
+              disabled={currentPage >= totalPages}
+              onClick={() => setCurrentPage(page => Math.min(totalPages, page + 1))}
+            >
+              Suivant <span aria-hidden="true">→</span>
+            </button>
           </nav>
         )}
 
