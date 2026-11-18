@@ -1122,6 +1122,225 @@ function ClientArea() {
           .client-area .auth-card { margin: 18px auto; padding: 22px; }
           .client-area .dashboard-panel { padding: 18px !important; }
         }
+
+        /* Ajustements responsive RAWAGO */
+        .client-area, .client-area * { min-width: 0; }
+        .client-area .client-shell { width: 100%; }
+        .client-area .client-nav-button { color: #E8F0EB; }
+        .client-area .client-nav-button.active { color: #173B38; }
+        .client-area .client-nav-button:focus-visible {
+          outline: 3px solid #C9AD7E; outline-offset: 2px;
+        }
+        .client-area input[type="file"] {
+          display: block; width: 100%; max-width: 100%; min-width: 0;
+          padding: 10px; border: 1px dashed #AFC2B7; border-radius: 9px;
+          color: #25433F; background: #F8FAF7; font: inherit;
+        }
+        .client-area input[type="file"]::file-selector-button {
+          margin: 0 10px 0 0; padding: 8px 11px; border: 0;
+          border-radius: 7px; color: #FFF; background: #173B38;
+          font: 700 12px Arial, sans-serif; cursor: pointer;
+        }
+        .client-area .request-item,
+        .client-area .client-module-row { overflow-wrap: anywhere; }
+        .client-area .client-module-grid,
+        .client-area .client-settings-grid,
+        .client-area .client-workspace { min-width: 0; }
+        @media (max-width: 900px) {
+          .client-area .client-shell,
+          .client-area .client-shell.is-collapsed { grid-template-columns: minmax(0, 1fr); }
+          .client-area .client-sidebar { padding: 14px 12px; }
+          .client-area .client-brand { padding-bottom: 12px; margin-bottom: 12px; }
+          .client-area .client-nav-caption { display: none; }
+          .client-area .client-nav-list {
+            display: flex; flex-direction: row; align-items: stretch;
+            gap: 8px; width: 100%; overflow-x: auto; overflow-y: hidden;
+            padding: 2px 2px 9px; overscroll-behavior-x: contain;
+            scrollbar-width: thin; -webkit-overflow-scrolling: touch;
+          }
+          .client-area .client-nav-button {
+            flex: 0 0 auto; width: auto; min-width: max-content;
+            min-height: 42px; margin: 0; padding: 9px 12px;
+            color: #E8F0EB; font-size: 12px;
+          }
+          .client-area .client-nav-button.active {
+            color: #173B38; background: #F4F0E6;
+          }
+          .client-area .client-nav-count { flex: 0 0 auto; }
+          .client-area .client-sidebar-bottom { display: none; }
+          .client-area .client-main { padding: 20px 16px 25px; }
+          .client-area .client-topbar { flex-wrap: wrap; align-items: flex-start; }
+          .client-area .client-top-actions { justify-content: flex-start; width: 100%; }
+        }
+        @media (max-width: 600px) {
+          .client-area .client-main { padding: 16px 11px 22px; }
+          .client-area .client-topbar { gap: 12px; margin-bottom: 18px; padding-bottom: 16px; }
+          .client-area .client-welcome-title { font-size: 26px; }
+          .client-area .client-top-actions { gap: 7px; }
+          .client-area .client-top-actions .btn { flex: 1 1 125px; white-space: normal; }
+          .client-area .client-profile-chip { flex: 1 1 100%; }
+          .client-area .client-hero { grid-template-columns: minmax(0,1fr); }
+          .client-area .client-hero-copy { padding: 23px 19px; }
+          .client-area .client-hero-image,
+          .client-area .client-hero-image img { min-height: 155px; max-height: 190px; }
+          .client-area .dashboard-panel { padding: 15px !important; }
+          .client-area .request-item { max-width: 100% !important; padding: 12px !important; }
+          .client-area .auth-card { margin: 12px auto; padding: 19px; }
+          .client-area .auth-switch { flex-wrap: wrap; }
+          .client-area .auth-switch button { min-width: 110px; }
+          .client-area .client-module-card { padding: 16px; }
+          .client-area input, .client-area select, .client-area textarea { max-width: 100%; }
+        }
+
+
+        /* Correctif renforcé du menu client sur petits écrans */
+        .client-area .client-shell > .client-sidebar {
+          background: linear-gradient(180deg,#173B38 0%,#102D2B 100%) !important;
+          color: #F8F7F0 !important;
+        }
+        .client-area .client-shell > .client-sidebar .client-nav-list {
+          background: transparent !important;
+        }
+        .client-area .client-shell > .client-sidebar .client-nav-button {
+          color: #F0F5F1 !important; opacity: 1 !important;
+          background-color: transparent; border-color: transparent;
+          text-decoration: none !important;
+        }
+        .client-area .client-shell > .client-sidebar .client-nav-button:hover,
+        .client-area .client-shell > .client-sidebar .client-nav-button:focus-visible {
+          color: #FFFFFF !important; background: rgba(255,255,255,.12) !important;
+        }
+        .client-area .client-shell > .client-sidebar .client-nav-button.active {
+          color: #173B38 !important; background: #F4F0E6 !important;
+          border-color: #D8C7A4 !important; opacity: 1 !important;
+        }
+        .client-area .client-shell > .client-sidebar .client-nav-button.active .client-nav-count {
+          color: #173B38 !important; background: #DCEBE4 !important;
+        }
+        .client-area .client-main,
+        .client-area .client-main > *,
+        .client-area .dashboard-panel,
+        .client-area .dashboard-heading { min-width: 0 !important; max-width: 100%; }
+        .client-area input[type="file"] {
+          display:block !important; box-sizing:border-box !important;
+          width:100% !important; min-width:0 !important; max-width:100% !important;
+          overflow:hidden !important; white-space:normal !important;
+          font-size:12px !important; padding:8px !important;
+        }
+        .client-area input[type="file"]::file-selector-button {
+          max-width:48%; margin-right:7px !important; padding:8px 9px !important;
+          font-size:11px !important; white-space:nowrap;
+        }
+        @media (max-width: 900px) {
+          .client-area .client-shell > .client-sidebar { display:flex !important; }
+          .client-area .client-nav-list {
+            display:flex !important; flex-direction:row !important;
+            align-items:stretch !important; flex-wrap:nowrap !important;
+            gap:7px !important; width:100% !important; max-width:100% !important;
+            overflow-x:auto !important; overflow-y:hidden !important;
+            padding:4px 2px 10px !important;
+          }
+          .client-area .client-nav-button {
+            flex:0 0 auto !important; width:auto !important; min-width:max-content !important;
+            min-height:42px !important; margin:0 !important; padding:9px 12px !important;
+            color:#F0F5F1 !important; font-size:12px !important;
+          }
+          .client-area .client-nav-button.active {
+            color:#173B38 !important; background:#F4F0E6 !important;
+          }
+        }
+        @media (max-width: 600px) {
+          .client-area .client-main { padding-left:11px !important; padding-right:11px !important; }
+          .client-area .dashboard-panel { padding:15px !important; overflow:hidden; }
+          .client-area input[type="file"] { font-size:11px !important; }
+          .client-area input[type="file"]::file-selector-button { max-width:44%; }
+        }
+
+
+
+        /* REFONTE MOBILE COMPLETE — ESPACE CLIENT (ordinateur inchangé) */
+        @media (max-width: 760px) {
+          .client-area { width:100% !important; max-width:100% !important; padding:10px 0 28px !important; }
+          .client-area .client-shell,
+          .client-area .client-shell.is-collapsed {
+            display:flex !important; flex-direction:column !important; width:100% !important;
+            min-height:0 !important; border-radius:16px !important; overflow:visible !important;
+          }
+          .client-area .client-sidebar {
+            display:block !important; width:100% !important; padding:16px 14px 13px !important;
+            border-radius:15px 15px 0 0 !important; overflow:visible !important;
+          }
+          .client-area .client-brand {
+            display:flex !important; align-items:center !important; gap:12px !important;
+            min-height:48px !important; padding:0 2px 13px !important; margin:0 0 12px !important;
+          }
+          .client-area .client-brand-mark { width:40px !important; height:40px !important; flex-basis:40px !important; }
+          .client-area .client-brand-name { font-size:12px !important; }
+          .client-area .client-brand-sub { font-size:9px !important; }
+          .client-area .client-nav-caption { display:block !important; padding:0 2px 9px !important; font-size:9px !important; }
+          .client-area .client-nav-list {
+            display:grid !important; grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+            align-items:stretch !important; gap:8px !important; width:100% !important;
+            overflow:visible !important; padding:0 !important; margin:0 !important;
+          }
+          .client-area .client-nav-button {
+            display:flex !important; width:100% !important; min-width:0 !important; min-height:52px !important;
+            height:auto !important; flex:none !important; margin:0 !important; padding:10px 9px !important;
+            gap:8px !important; white-space:normal !important; overflow:visible !important;
+            border:1px solid rgba(255,255,255,.14) !important; border-radius:11px !important;
+            color:#F4F7F4 !important; background:rgba(255,255,255,.055) !important;
+            font-size:12px !important; line-height:1.25 !important; text-align:left !important;
+          }
+          .client-area .client-nav-button > span:nth-child(2) {
+            display:block !important; flex:1 1 auto !important; min-width:0 !important;
+            white-space:normal !important; overflow:visible !important; text-overflow:clip !important;
+            overflow-wrap:anywhere !important;
+          }
+          .client-area .client-nav-icon { flex:0 0 20px !important; width:20px !important; font-size:16px !important; }
+          .client-area .client-nav-count { flex:0 0 auto !important; margin-left:auto !important; }
+          .client-area .client-nav-button.active {
+            color:#173B38 !important; background:#F4F0E6 !important;
+            border-color:#D8C7A4 !important; box-shadow:0 4px 12px rgba(0,0,0,.12) !important;
+          }
+          .client-area .client-sidebar-bottom { display:none !important; }
+          .client-area .client-main { width:100% !important; min-width:0 !important; padding:18px 13px 22px !important; overflow:visible !important; }
+          .client-area .client-topbar { display:flex !important; flex-direction:column !important; align-items:stretch !important; gap:13px !important; padding-bottom:16px !important; margin-bottom:17px !important; }
+          .client-area .client-heading-copy { width:100% !important; min-width:0 !important; }
+          .client-area .client-kicker { font-size:9px !important; letter-spacing:.12em !important; overflow-wrap:anywhere !important; }
+          .client-area .client-welcome-title { font-size:clamp(23px,7vw,30px) !important; line-height:1.12 !important; overflow-wrap:anywhere !important; margin:7px 0 !important; }
+          .client-area .client-welcome-sub { font-size:14px !important; line-height:1.5 !important; }
+          .client-area .client-top-actions { display:grid !important; grid-template-columns:minmax(0,1fr) minmax(0,1fr) !important; width:100% !important; gap:8px !important; }
+          .client-area .client-profile-chip { grid-column:1/-1 !important; width:100% !important; min-width:0 !important; }
+          .client-area .client-top-actions .btn { width:100% !important; min-width:0 !important; min-height:44px !important; padding:10px 8px !important; white-space:normal !important; font-size:12px !important; }
+          .client-area .client-hero { display:flex !important; flex-direction:column !important; gap:0 !important; margin:0 0 16px !important; }
+          .client-area .client-hero-copy { width:100% !important; padding:20px 17px !important; }
+          .client-area .client-hero-copy h2 { font-size:25px !important; line-height:1.15 !important; }
+          .client-area .client-hero-image { width:100% !important; min-height:150px !important; height:170px !important; }
+          .client-area .client-hero-image img { width:100% !important; height:170px !important; min-height:170px !important; object-fit:cover !important; }
+          .client-area .client-workspace,
+          .client-area .dashboard-grid,
+          .client-area .client-settings-grid,
+          .client-area .client-module-grid { display:grid !important; grid-template-columns:minmax(0,1fr) !important; gap:13px !important; width:100% !important; }
+          .client-area .dashboard-summary { display:grid !important; grid-template-columns:minmax(0,1fr) !important; gap:11px !important; margin:0 0 16px !important; }
+          .client-area .dashboard-panel,
+          .client-area .client-module-card { width:100% !important; min-width:0 !important; max-width:100% !important; padding:16px !important; margin-left:0 !important; margin-right:0 !important; border-radius:13px !important; }
+          .client-area .dashboard-panel h2,
+          .client-area .dashboard-panel h3 { font-size:19px !important; line-height:1.25 !important; overflow-wrap:anywhere !important; }
+          .client-area .request-item,
+          .client-area .client-module-row { width:100% !important; max-width:100% !important; min-width:0 !important; padding:12px !important; overflow-wrap:anywhere !important; }
+          .client-area .request-item-top { display:flex !important; flex-wrap:wrap !important; gap:8px !important; }
+          .client-area input:not([type=checkbox]):not([type=radio]),
+          .client-area select,.client-area textarea { width:100% !important; max-width:100% !important; min-width:0 !important; font-size:16px !important; }
+          .client-area input[type=file] { width:100% !important; max-width:100% !important; min-width:0 !important; font-size:10px !important; overflow:hidden !important; }
+          .client-area .btn { max-width:100% !important; white-space:normal !important; overflow-wrap:anywhere !important; }
+          .client-area table { display:block !important; width:100% !important; max-width:100% !important; overflow-x:auto !important; }
+        }
+        @media (max-width:380px) {
+          .client-area .client-nav-list { grid-template-columns:minmax(0,1fr) !important; }
+          .client-area .client-nav-button { min-height:45px !important; }
+          .client-area .client-main { padding-left:10px !important; padding-right:10px !important; }
+        }
+
       `}</style>
 
       {notification && (

@@ -1305,3 +1305,41 @@ main.section button:not(.btn), .admin-area button:not(.btn), .community-page but
 .knowledge-card img, .article-cover { object-fit:cover; }
 .community-avatar { border-radius:50%; }
 .community-post-content, .article-content { line-height:1.9; }
+
+
+/* Responsive global : éviter les débordements sur téléphone */
+*, *::before, *::after { box-sizing: border-box; }
+img, video, canvas, svg { max-width: 100%; }
+input, select, textarea, button { max-width: 100%; }
+@media (max-width: 600px) {
+  .site-header { padding-inline: 16px; gap: 10px; }
+  .site-header .brand { min-width: 0; max-width: calc(100% - 54px); }
+  .site-header .brand-wordmark { min-width: 0; overflow-wrap: anywhere; }
+  .site-nav { max-height: calc(100dvh - 76px); overflow-y: auto; }
+  main.section { padding-inline: 16px; }
+  .dashboard-grid, .dashboard-summary { grid-template-columns: minmax(0, 1fr) !important; }
+  .dashboard-panel, .dashboard-heading, .auth-card { min-width: 0; }
+  .request-list { min-width: 0; }
+  .request-item { overflow-wrap: anywhere; }
+  .footer-main, .footer-bottom { gap: 12px; }
+}
+
+
+/* RAWAGO — garde-fous supplémentaires pour Safari iOS */
+html, body, #root { max-width:100%; min-width:0; overflow-x:hidden; }
+input[type="file"] { box-sizing:border-box; width:100%; min-width:0; max-width:100%; overflow:hidden; font-size:12px; }
+input[type="file"]::file-selector-button { max-width:48%; white-space:nowrap; }
+@media (max-width:600px) {
+  input[type="file"] { font-size:11px; }
+  input[type="file"]::file-selector-button { max-width:44%; }
+  .site-footer, .section, main.section { max-width:100%; }
+}
+
+
+/* RAWAGO — garde-fous mobiles pour les espaces privés uniquement */
+@media (max-width: 760px) {
+  .client-area, .admin-area { overflow-x:clip; }
+  .client-area *, .admin-area * { box-sizing:border-box; }
+  .client-area img, .admin-area img, .client-area svg, .admin-area svg { max-width:100%; }
+  .client-area .dashboard-panel, .admin-area .dashboard-panel { overflow-wrap:anywhere; }
+}
