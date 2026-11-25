@@ -1151,6 +1151,78 @@ export default function Knowledge() {
           }
         }
 
+
+        /* FIX D'ISOLATION : les règles globales du site ne doivent pas écraser
+           les styles des boutons, de la recherche et des catégories SAVOIRS. */
+        .knowledge-page .knowledge-search-wrap { width: 100%; min-width: 0; }
+        .knowledge-page .knowledge-search-icon {
+          left: 20px; width: 20px; height: 20px; display: grid; place-items: center;
+          z-index: 2; font-size: 0; color: #80938d;
+        }
+        .knowledge-page .knowledge-search-icon svg { display: block; width: 20px; height: 20px; max-width: none; }
+        .knowledge-page input.knowledge-search,
+        main.section.knowledge-page input.knowledge-search[type=search] {
+          display: block; width: 100%; min-width: 0; max-width: 100%;
+          min-height: 58px; padding: 14px 20px 14px 54px !important;
+          border: 1px solid #dce5df !important; border-radius: 999px !important;
+          background: #fff !important; color: var(--knowledge-ink); font: inherit; font-size: 15px;
+          box-shadow: none !important; box-sizing: border-box;
+        }
+        .knowledge-page .knowledge-category-section { min-width: 0; overflow: hidden; }
+        .knowledge-page .knowledge-category-scroll { min-width: 0; width: 100%; }
+        .knowledge-page button.knowledge-category-button,
+        main.section.knowledge-page button.knowledge-category-button[aria-pressed] {
+          appearance: none; -webkit-appearance: none; display: inline-flex; flex: 0 0 auto;
+          align-items: center; justify-content: center; gap: 9px; min-height: 44px;
+          padding: 0 17px !important; border: 1px solid #e0e8e1 !important;
+          border-radius: 999px !important; background: #fff !important; color: #50666a !important;
+          font-family: inherit; font-size: 13px; font-weight: 700; line-height: 1.2;
+          white-space: nowrap; box-shadow: none !important; cursor: pointer;
+        }
+        .knowledge-page button.knowledge-category-button.active,
+        main.section.knowledge-page button.knowledge-category-button[aria-pressed=true] {
+          background: var(--knowledge-green) !important; color: #fff !important;
+          border-color: var(--knowledge-green) !important; box-shadow: 0 5px 15px rgba(8,127,120,.18) !important;
+        }
+        .knowledge-page button.knowledge-scroll-button {
+          appearance: none; -webkit-appearance: none; display: inline-flex; flex: 0 0 38px;
+          align-items: center; justify-content: center; width: 38px; height: 38px;
+          padding: 0 !important; border: 1px solid #dce6df !important; border-radius: 50% !important;
+          background: #fff !important; color: var(--knowledge-ink) !important; font-size: 21px;
+          line-height: 1; box-shadow: none !important;
+        }
+        .knowledge-page .knowledge-grid {
+          display: grid; grid-template-columns: repeat( auto-fill, minmax(min(100%, 270px), 1fr) );
+          width: 100%; min-width: 0; gap: 22px;
+        }
+        .knowledge-page .knowledge-card { min-width: 0; width: 100%; }
+        .knowledge-page .knowledge-card-body { min-width: 0; }
+        .knowledge-page .knowledge-card h2, .knowledge-page .knowledge-card p { overflow-wrap: anywhere; }
+        .knowledge-page .knowledge-read {
+          appearance: none; -webkit-appearance: none; display: inline-flex; align-items: center; gap: 8px;
+          border: 0 !important; background: transparent !important; color: var(--knowledge-green) !important;
+          padding: 0 !important; box-shadow: none !important; font: inherit; font-weight: 700; cursor: pointer;
+        }
+        .knowledge-page .knowledge-read:hover { transform: none; text-decoration: underline; }
+        @media (max-width: 760px) {
+          .knowledge-page .knowledge-category-top { flex-wrap: wrap; }
+          .knowledge-page .knowledge-category-controls { margin-left: auto; }
+          .knowledge-page .knowledge-category-section { padding: 17px 14px 15px; }
+          .knowledge-page .knowledge-grid { grid-template-columns: minmax(0, 1fr); gap: 15px; }
+          .knowledge-page .knowledge-card { display: grid; grid-template-columns: minmax(112px, 34%) minmax(0, 1fr); align-items: stretch; }
+          .knowledge-page .knowledge-card-image { height: 100%; min-height: 165px; }
+          .knowledge-page .knowledge-card-body { padding: 15px; }
+          .knowledge-page .knowledge-card h2 { font-size: 18px; margin: 8px 0; }
+          .knowledge-page .knowledge-card p { font-size: 12px; line-height: 1.6; -webkit-line-clamp: 3; margin-bottom: 12px; }
+          .knowledge-page .knowledge-results-heading { align-items: flex-start; flex-wrap: wrap; }
+          .knowledge-page .knowledge-results-heading h3 { font-size: 21px; }
+        }
+        @media (max-width: 380px) {
+          .knowledge-page .knowledge-card { grid-template-columns: minmax(96px, 32%) minmax(0, 1fr); }
+          .knowledge-page .knowledge-card-body { padding: 12px; }
+          .knowledge-page .knowledge-card h2 { font-size: 16px; }
+          .knowledge-page .knowledge-category-button { padding-inline: 12px !important; }
+        }
       `}</style>
 
       {selectedArticle ? (
@@ -1310,8 +1382,11 @@ export default function Knowledge() {
 
             <div className="knowledge-search-wrap">
 
-              <span className="knowledge-search-icon">
-                ⌕
+              <span className="knowledge-search-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="10.8" cy="10.8" r="6.8" />
+                  <path d="m16 16 4.2 4.2" />
+                </svg>
               </span>
 
               <input

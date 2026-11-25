@@ -26,8 +26,8 @@ function Home() {
           <div className="hero-image-index">01 <span>/</span> APPRENDRE AUTREMENT</div>
           <div className="floating-note">
             <span className="note-symbol">✳</span>
-            <span><small>NOTRE CONVICTION</small><strong>Le savoir ouvre<br />de nouvelles voies.</strong></span>
-          </div>
+            <span><small>NOTRE CONVICTION</small><strong>Le savoir ouvre<br />de nouvelles voies.</strong>
+          </span></div>
           <div className="hero-orbit" aria-hidden="true"></div>
         </div>
       </section>
@@ -38,6 +38,27 @@ function Home() {
           <h2>Apprendre avec méthode.<br /><em>Progresser avec confiance.</em></h2>
           <p>Nous réunissons accompagnement humain, exigence intellectuelle et ressources documentaires pour vous aider à avancer avec clarté, à chaque étape de votre parcours.</p>
           <Link className="text-link" to="/a-propos">Découvrir notre vision <span>↗</span></Link>
+        </div>
+      </section>
+
+
+      <section className="home-cockpit-promo" aria-labelledby="home-cockpit-title">
+        <div className="home-cockpit-inner">
+          <div className="home-cockpit-mark" aria-hidden="true">✦</div>
+          <div className="home-cockpit-copy">
+            <div className="eyebrow">VOTRE ESPACE DE PROGRESSION</div>
+            <h2 id="home-cockpit-title">Un espace pour <em>organiser vos idées.</em></h2>
+            <p>Planifiez vos journées, rassemblez vos notes, suivez vos objectifs et gardez le cap avec votre Cockpit RAWAGO — un outil personnel simple, accessible à tout moment.</p>
+            <Link className="btn primary" to="/cockpit">Ouvrir mon cockpit <span>↗</span></Link>
+          </div>
+          <div className="home-cockpit-illustration">
+            <img
+              src="/images/cockpit-illustration.png"
+              alt="Illustration du Cockpit RAWAGO sur ordinateur : tableau de bord, tâches, notes, objectifs et minuterie de concentration"
+              loading="lazy"
+            />
+            <div className="cockpit-illustration-caption">Planifier · Organiser · Progresser</div>
+          </div>
         </div>
       </section>
 

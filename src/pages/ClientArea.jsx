@@ -861,10 +861,10 @@ function ClientArea() {
     <main className="client-area section">
       <style>{`
         .client-area {
-          --client-ink: #193936;
-          --client-green: #173B38;
-          --client-green-2: #24534D;
-          --client-teal: #16877D;
+          --client-ink: #19365a;
+          --client-green: #173b62;
+          --client-green-2: #28517f;
+          --client-teal: #3978b8;
           --client-muted: #71817B;
           --client-line: #E5E9E2;
           --client-paper: #F7F6F0;
@@ -889,7 +889,7 @@ function ClientArea() {
           display: flex; flex-direction: column; min-width: 0;
           padding: 24px 15px;
           color: #F8F7F0;
-          background: linear-gradient(180deg,#173B38 0%,#102D2B 100%);
+          background: linear-gradient(180deg,#173b62 0%,#173b62 100%);
         }
         .client-area .client-brand {
           display: flex; align-items: center; gap: 12px;
@@ -900,7 +900,7 @@ function ClientArea() {
         .client-area .client-brand-mark {
           display: grid; place-items: center; flex: 0 0 42px;
           width: 42px; height: 42px; border-radius: 14px;
-          background: #F4F0E6; color: #173B38;
+          background: #F4F0E6; color: #173b62;
           font: 700 25px Georgia,serif;
         }
         .client-area .client-brand-name { font-size: 12px; letter-spacing: .17em; font-weight: 800; }
@@ -924,7 +924,7 @@ function ClientArea() {
         }
         .client-area .client-nav-button:hover { background: rgba(255,255,255,.08); color: #FFF; }
         .client-area .client-nav-button.active {
-          color: #173B38; background: #F4F0E6;
+          color: #173b62; background: #F4F0E6;
           box-shadow: 0 6px 18px rgba(0,0,0,.12);
         }
         .client-area .client-nav-icon { width: 22px; flex: 0 0 22px; text-align: center; font-size: 17px; }
@@ -934,7 +934,7 @@ function ClientArea() {
           border-radius: 20px; background: rgba(255,255,255,.12);
           color: #F5F4ED; font-size: 10px; text-align: center;
         }
-        .client-area .client-nav-button.active .client-nav-count { background: #DCEBE4; color: #173B38; }
+        .client-area .client-nav-button.active .client-nav-count { background: #e6eff8; color: #173b62; }
         .client-area .client-sidebar-bottom { margin-top: auto; padding-top: 16px; border-top: 1px solid rgba(255,255,255,.13); }
         .client-area .client-collapse-button {
           width: 100%; padding: 10px; border: 1px solid rgba(255,255,255,.16);
@@ -949,7 +949,7 @@ function ClientArea() {
         }
         .client-area .client-kicker { color: #87938D; font-size: 10px; letter-spacing: .12em; text-transform: uppercase; }
         .client-area .client-welcome-title {
-          margin: 7px 0 5px; color: #193936; font: 600 clamp(25px,3vw,34px) Georgia,'Times New Roman',serif;
+          margin: 7px 0 5px; color: #19365a; font: 600 clamp(25px,3vw,34px) Georgia,'Times New Roman',serif;
         }
         .client-area .client-welcome-sub { margin: 0; color: #71817B; font-size: 13px; overflow-wrap: anywhere; }
         .client-area .client-top-actions { display: flex; gap: 9px; flex-wrap: wrap; }
@@ -960,13 +960,13 @@ function ClientArea() {
         .client-area .client-hero {
           display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(280px, .95fr);
           min-height: 265px; margin: 0 0 23px; overflow: hidden;
-          border-radius: 18px; background: #173B38;
+          border-radius: 18px; background: #173b62;
           box-shadow: 0 12px 30px rgba(23,59,56,.13);
         }
         .client-area .client-hero-copy {
           display: flex; flex-direction: column; align-items: flex-start; justify-content: center;
           padding: 30px 34px; color: #F8F6EF;
-          background: radial-gradient(circle at 10% 10%, rgba(44,119,105,.42), transparent 48%), linear-gradient(135deg,#173B38,#102D2B);
+          background: radial-gradient(circle at 10% 10%, rgba(44,119,105,.42), transparent 48%), linear-gradient(135deg,#173b62,#173b62);
         }
         .client-area .client-hero-overline { color: #A9D2C5; font-size: 9px; font-weight: 800; letter-spacing: .19em; }
         .client-area .client-hero-copy h2 {
@@ -976,7 +976,7 @@ function ClientArea() {
         .client-area .client-hero-link {
           display: inline-flex; align-items: center; gap: 14px; margin-top: 20px;
           padding: 10px 15px; border: 1px solid rgba(244,240,230,.42); border-radius: 8px;
-          background: #F4F0E6; color: #173B38; font: 700 12px Arial, sans-serif; cursor: pointer;
+          background: #F4F0E6; color: #173b62; font: 700 12px Arial, sans-serif; cursor: pointer;
         }
         .client-area .client-hero-link:hover { background: #FFF; transform: translateY(-1px); }
         .client-area .client-hero-image { position: relative; min-height: 265px; overflow: hidden; }
@@ -996,25 +996,25 @@ function ClientArea() {
           gap: 14px !important; margin-bottom: 22px !important;
         }
         .client-area .dashboard-panel {
-          color: #193936 !important; background: #FFF !important;
+          color: #19365a !important; background: #FFF !important;
           border: 1px solid #E7EAE4 !important; border-radius: 15px !important;
           box-shadow: 0 5px 18px rgba(26,54,48,.035);
         }
         .client-area .dashboard-panel h2,
         .client-area .dashboard-panel h3,
-        .client-area .dashboard-panel strong { color: #193936 !important; }
+        .client-area .dashboard-panel strong { color: #19365a !important; }
         .client-area .dashboard-panel p,
         .client-area .dashboard-panel small,
         .client-area .dashboard-panel label { color: #687A73 !important; }
         .client-area .dashboard-panel .eyebrow,
-        .client-area .dashboard-summary .eyebrow { color: #16877D !important; letter-spacing: .13em; }
+        .client-area .dashboard-summary .eyebrow { color: #3978b8 !important; letter-spacing: .13em; }
         .client-area .dashboard-panel input,
         .client-area .dashboard-panel select,
         .client-area .dashboard-panel textarea,
         .client-area .auth-form input,
         .client-area .auth-form select,
         .client-area .auth-form textarea {
-          color: #193936 !important; background: #FFF !important;
+          color: #19365a !important; background: #FFF !important;
           border: 1px solid #D6DED8 !important; border-radius: 9px !important;
         }
         .client-area .dashboard-panel input:focus,
@@ -1023,29 +1023,29 @@ function ClientArea() {
         .client-area .auth-form input:focus,
         .client-area .auth-form select:focus,
         .client-area .auth-form textarea:focus {
-          outline: 2px solid rgba(22,135,125,.16); border-color: #16877D !important;
+          outline: 2px solid rgba(22,135,125,.16); border-color: #3978b8 !important;
         }
         .client-area .btn.primary {
-          color: #FFF !important; background: #173B38 !important;
-          border: 1px solid #173B38 !important; border-radius: 9px !important;
+          color: #FFF !important; background: #173b62 !important;
+          border: 1px solid #173b62 !important; border-radius: 9px !important;
         }
-        .client-area .btn.primary:hover { background: #24534D !important; }
+        .client-area .btn.primary:hover { background: #28517f !important; }
         .client-area .btn.secondary {
-          color: #25433F !important; background: #FFF !important;
+          color: #294d76 !important; background: #FFF !important;
           border: 1px solid #D6DED8 !important; border-radius: 9px !important;
         }
         .client-area .btn.secondary:hover { background: #EFF5F0 !important; border-color: #9BB9AA !important; }
         .client-area .dashboard-heading { display: none; }
         .client-area .dashboard-grid { gap: 18px; }
         .client-area .request-item {
-          color: #193936 !important; background: #FAFBF8 !important;
+          color: #19365a !important; background: #FAFBF8 !important;
           border: 1px solid #E7EAE4 !important; border-radius: 13px !important;
           padding: 17px !important;
         }
         .client-area .request-item p,
         .client-area .request-item small { color: #687A73 !important; }
         .client-area .request-item strong,
-        .client-area .request-item b { color: #193936 !important; }
+        .client-area .request-item b { color: #19365a !important; }
         .client-area .form-error { color: #B42318 !important; }
         .client-area .form-message { color: #16805F !important; }
         .client-area .empty-state { color: #71817B !important; }
@@ -1054,10 +1054,10 @@ function ClientArea() {
           background: #FFF; border: 1px solid #E7EAE4; border-radius: 18px;
           box-shadow: 0 18px 50px rgba(26,54,48,.07);
         }
-        .client-area .auth-card h2 { color: #193936; font: 600 29px Georgia,serif; }
+        .client-area .auth-card h2 { color: #19365a; font: 600 29px Georgia,serif; }
         .client-area .auth-switch { display: flex; gap: 8px; padding: 6px; margin: 18px 0; border-radius: 11px; background: #F1F4EF; }
         .client-area .auth-switch button { flex: 1; padding: 11px; border: 0; border-radius: 8px; color: #536B63; background: transparent; cursor: pointer; }
-        .client-area .auth-switch button.active { color: #173B38; background: #FFF; box-shadow: 0 2px 8px rgba(26,54,48,.08); }
+        .client-area .auth-switch button.active { color: #173b62; background: #FFF; box-shadow: 0 2px 8px rgba(26,54,48,.08); }
         .client-area .auth-form { display: grid; gap: 13px; }
         .client-area .auth-form label { display: grid; gap: 7px; color: #536B63; font-size: 13px; }
         .client-area .auth-form input,
@@ -1066,30 +1066,30 @@ function ClientArea() {
 
         .client-area .client-profile-chip { display: inline-flex; align-items: center; gap: 8px; margin-right: 4px; color: #526B63; font-size: 11px; font-weight: 700; }
         .client-area .client-profile-chip img, .client-area .client-profile-chip span { width: 34px; height: 34px; border-radius: 50%; object-fit: cover; }
-        .client-area .client-profile-chip span { display: grid; place-items: center; color: #F4F0E6; background: #173B38; font: 600 16px Georgia,serif; }
+        .client-area .client-profile-chip span { display: grid; place-items: center; color: #F4F0E6; background: #173b62; font: 600 16px Georgia,serif; }
         .client-area .client-profile-chip small { max-width: 130px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .client-area .client-settings-grid { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 18px; align-items: start; }
         .client-area .client-settings-stack { display: grid; gap: 18px; min-width: 0; }
         .client-area .client-settings-card { padding: 24px; min-width: 0; }
-        .client-area .client-settings-card h2 { margin: 8px 0; color: #193936; font: 600 24px Georgia,serif; }
-        .client-area .client-settings-card h3 { color: #193936; font: 600 20px Georgia,serif; }
+        .client-area .client-settings-card h2 { margin: 8px 0; color: #19365a; font: 600 24px Georgia,serif; }
+        .client-area .client-settings-card h3 { color: #19365a; font: 600 20px Georgia,serif; }
         .client-area .client-avatar-editor { display: grid; justify-items: start; gap: 9px; margin: 10px 0 8px; }
         .client-area .client-avatar-editor img, .client-area .client-avatar-editor > span { width: 104px; height: 104px; border-radius: 50%; object-fit: cover; border: 4px solid #E6F0E9; }
-        .client-area .client-avatar-editor > span { display: grid; place-items: center; background: #173B38; color: #F4F0E6; font: 600 38px Georgia,serif; }
-        .client-area .client-avatar-upload { display: inline-flex; padding: 9px 13px; border: 1px solid #D6DED8; border-radius: 8px; color: #24534D; background: #F7FAF6; cursor: pointer; font-size: 12px; font-weight: 700; }
+        .client-area .client-avatar-editor > span { display: grid; place-items: center; background: #173b62; color: #F4F0E6; font: 600 38px Georgia,serif; }
+        .client-area .client-avatar-upload { display: inline-flex; padding: 9px 13px; border: 1px solid #D6DED8; border-radius: 8px; color: #28517f; background: #F7FAF6; cursor: pointer; font-size: 12px; font-weight: 700; }
         .client-area #rawago-avatar-input { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); }
         .client-area .client-security-note { background: #F1F6F0 !important; }
         .client-area .client-security-note ul { padding-left: 20px; color: #687A73; font-size: 13px; line-height: 1.8; }
         .client-area .client-module-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:16px; }
         .client-area .client-module-card { background:#fff; border:1px solid #E7EAE4; border-radius:15px; padding:22px; box-shadow:0 5px 18px rgba(26,54,48,.035); }
-        .client-area .client-module-card h2,.client-area .client-module-card h3 { color:#193936; }
+        .client-area .client-module-card h2,.client-area .client-module-card h3 { color:#19365a; }
         .client-area .client-module-card p,.client-area .client-module-card small { color:#687A73; }
         .client-area .client-module-form { display:grid; gap:12px; margin-top:16px; }
         .client-area .client-module-form label { display:grid; gap:7px; color:#536B63; font-size:13px; }
-        .client-area .client-module-form input,.client-area .client-module-form select,.client-area .client-module-form textarea { width:100%; padding:12px 13px; border:1px solid #D6DED8; border-radius:9px; color:#193936; background:#fff; font:inherit; }
+        .client-area .client-module-form input,.client-area .client-module-form select,.client-area .client-module-form textarea { width:100%; padding:12px 13px; border:1px solid #D6DED8; border-radius:9px; color:#19365a; background:#fff; font:inherit; }
         .client-area .client-module-list { display:grid; gap:11px; margin-top:15px; }
         .client-area .client-module-row { padding:15px; border:1px solid #E7EAE4; border-radius:12px; background:#FAFBF8; }
-        .client-area .client-module-row h3 { margin:0 0 6px; font-size:15px; color:#193936; }
+        .client-area .client-module-row h3 { margin:0 0 6px; font-size:15px; color:#19365a; }
         .client-area .client-module-row p { margin:5px 0; color:#687A73; font-size:13px; line-height:1.6; }
         .client-area .client-module-meta { display:flex; flex-wrap:wrap; gap:8px; align-items:center; color:#7B8982; font-size:11px; margin-top:8px; }
         .client-area .client-tag { display:inline-flex; padding:5px 9px; border-radius:30px; background:#EAF2EC; color:#28634F; font-size:11px; font-weight:700; }
@@ -1127,18 +1127,18 @@ function ClientArea() {
         .client-area, .client-area * { min-width: 0; }
         .client-area .client-shell { width: 100%; }
         .client-area .client-nav-button { color: #E8F0EB; }
-        .client-area .client-nav-button.active { color: #173B38; }
+        .client-area .client-nav-button.active { color: #173b62; }
         .client-area .client-nav-button:focus-visible {
           outline: 3px solid #C9AD7E; outline-offset: 2px;
         }
         .client-area input[type="file"] {
           display: block; width: 100%; max-width: 100%; min-width: 0;
           padding: 10px; border: 1px dashed #AFC2B7; border-radius: 9px;
-          color: #25433F; background: #F8FAF7; font: inherit;
+          color: #294d76; background: #F8FAF7; font: inherit;
         }
         .client-area input[type="file"]::file-selector-button {
           margin: 0 10px 0 0; padding: 8px 11px; border: 0;
-          border-radius: 7px; color: #FFF; background: #173B38;
+          border-radius: 7px; color: #FFF; background: #173b62;
           font: 700 12px Arial, sans-serif; cursor: pointer;
         }
         .client-area .request-item,
@@ -1164,7 +1164,7 @@ function ClientArea() {
             color: #E8F0EB; font-size: 12px;
           }
           .client-area .client-nav-button.active {
-            color: #173B38; background: #F4F0E6;
+            color: #173b62; background: #F4F0E6;
           }
           .client-area .client-nav-count { flex: 0 0 auto; }
           .client-area .client-sidebar-bottom { display: none; }
@@ -1195,7 +1195,7 @@ function ClientArea() {
 
         /* Correctif renforcé du menu client sur petits écrans */
         .client-area .client-shell > .client-sidebar {
-          background: linear-gradient(180deg,#173B38 0%,#102D2B 100%) !important;
+          background: linear-gradient(180deg,#173b62 0%,#173b62 100%) !important;
           color: #F8F7F0 !important;
         }
         .client-area .client-shell > .client-sidebar .client-nav-list {
@@ -1211,11 +1211,11 @@ function ClientArea() {
           color: #FFFFFF !important; background: rgba(255,255,255,.12) !important;
         }
         .client-area .client-shell > .client-sidebar .client-nav-button.active {
-          color: #173B38 !important; background: #F4F0E6 !important;
+          color: #173b62 !important; background: #F4F0E6 !important;
           border-color: #D8C7A4 !important; opacity: 1 !important;
         }
         .client-area .client-shell > .client-sidebar .client-nav-button.active .client-nav-count {
-          color: #173B38 !important; background: #DCEBE4 !important;
+          color: #173b62 !important; background: #e6eff8 !important;
         }
         .client-area .client-main,
         .client-area .client-main > *,
@@ -1246,7 +1246,7 @@ function ClientArea() {
             color:#F0F5F1 !important; font-size:12px !important;
           }
           .client-area .client-nav-button.active {
-            color:#173B38 !important; background:#F4F0E6 !important;
+            color:#173b62 !important; background:#F4F0E6 !important;
           }
         }
         @media (max-width: 600px) {
@@ -1299,7 +1299,7 @@ function ClientArea() {
           .client-area .client-nav-icon { flex:0 0 20px !important; width:20px !important; font-size:16px !important; }
           .client-area .client-nav-count { flex:0 0 auto !important; margin-left:auto !important; }
           .client-area .client-nav-button.active {
-            color:#173B38 !important; background:#F4F0E6 !important;
+            color:#173b62 !important; background:#F4F0E6 !important;
             border-color:#D8C7A4 !important; box-shadow:0 4px 12px rgba(0,0,0,.12) !important;
           }
           .client-area .client-sidebar-bottom { display:none !important; }
@@ -1424,7 +1424,7 @@ function ClientArea() {
           }
           .client-area .client-brand-mark {
             width:44px !important; height:44px !important; flex:0 0 44px !important;
-            border-radius:14px !important; background:#F4F0E6 !important; color:#173B38 !important;
+            border-radius:14px !important; background:#F4F0E6 !important; color:#173b62 !important;
             display:grid !important; place-items:center !important; font-size:25px !important;
           }
           .client-area .client-brand-name { color:#fff !important; font-size:14px !important; letter-spacing:.2em !important; }
@@ -1473,10 +1473,10 @@ function ClientArea() {
           }
           .client-area .client-nav-count { flex:0 0 auto !important; margin-left:auto !important; }
           .client-area .client-nav-button.active {
-            color:#173B38 !important; background:linear-gradient(135deg,#F8F4E9,#EDE5D3) !important;
+            color:#173b62 !important; background:linear-gradient(135deg,#F8F4E9,#EDE5D3) !important;
             border-color:#D6C39C !important; box-shadow:0 7px 18px rgba(0,0,0,.16) !important;
           }
-          .client-area .client-nav-button.active .client-nav-icon { background:#DCE8E0 !important; color:#173B38 !important; }
+          .client-area .client-nav-button.active .client-nav-icon { background:#DCE8E0 !important; color:#173b62 !important; }
           .client-area .client-nav-button:active { transform:scale(.975) !important; }
           .client-area .client-sidebar-bottom { display:none !important; }
           .client-area .client-main {
@@ -1721,6 +1721,9 @@ function ClientArea() {
                     </button>
                   ))}
                 </nav>
+                <div className="client-sidebar-cockpit-link">
+                  <a href="/cockpit"><span aria-hidden="true">✦</span><span>Mon Cockpit RAWAGO</span><span aria-hidden="true">↗</span></a>
+                </div>
                 <div className="client-sidebar-bottom">
                   <button type="button" className="client-collapse-button" onClick={() => setClientSidebarCollapsed(value => !value)}>
                     {clientSidebarCollapsed ? "»" : "«  Réduire le menu"}
@@ -2011,7 +2014,7 @@ function ClientArea() {
                 <h2>Ma messagerie {notificationCount > 0 && <span className="status status-pending">{notificationCount} nouveau(x)</span>}</h2>
                 <p>Échanges privés avec notre équipe.</p>
                 <p style={{ margin: "0 0 12px", fontSize: "0.9rem" }}>
-                  <span style={{ color: adminOnline ? "#159B96" : "#8a8a8a" }}>●</span>
+                  <span style={{ color: adminOnline ? "#4b8fd0" : "#8a8a8a" }}>●</span>
                   {" "}{adminOnline ? "Équipe en ligne" : "Équipe hors ligne"}
                 </p>
                 {adminTyping && <p style={{ fontStyle: "italic", color: "#64748b" }}>L’équipe écrit…</p>}

@@ -537,14 +537,16 @@ function Library() {
           background: #fff;
         }
         .library-page .library-category-nav {
-          display: flex; gap: 10px; overflow-x: auto; overflow-y: hidden;
+          display: flex; gap: 9px; overflow-x: auto; overflow-y: hidden;
+          width: 100%; max-width: 100%; box-sizing: border-box;
           padding: 5px 2px 12px; scroll-padding-inline: 12px;
           scrollbar-width: none; -ms-overflow-style: none; -webkit-overflow-scrolling: touch;
+          overscroll-behavior-x: contain; scroll-snap-type: x proximity;
         }
         .library-page .library-category-nav::-webkit-scrollbar { display: none; }
         .library-page .library-category-chip {
           flex: 0 0 auto; min-height: 42px; display: inline-flex; align-items: center;
-          gap: 9px; padding: 10px 16px; border: 1px solid var(--library-line);
+          scroll-snap-align: start; gap: 8px; padding: 10px 13px; border: 1px solid var(--library-line);
           border-radius: 12px; background: #fff; color: #40565a !important;
           font: inherit; font-size: 12px; font-weight: 650; white-space: nowrap;
           cursor: pointer; transition: all .2s ease;
@@ -582,21 +584,30 @@ function Library() {
           font-size: clamp(24px, 3vw, 32px); letter-spacing: -.035em;
         }
         .library-page .library-catalog-heading p { margin: 0; color: var(--library-muted); line-height: 1.65; }
+        .library-page .library-search-wrap {
+          position: relative; width: 100%; max-width: 560px; margin: 0 0 28px;
+        }
+        .library-page .library-search-icon {
+          position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
+          width: 19px; height: 19px; color: #748787; pointer-events: none;
+          display: block; z-index: 1;
+        }
         .library-page .library-search {
-          width: 100%; max-width: 560px; box-sizing: border-box;
-          padding: 15px 18px 15px 46px; border-radius: 13px;
-          border: 1px solid #dfe8e5; background-color: #fff;
+          display: block; width: 100%; min-width: 0; box-sizing: border-box;
+          padding: 15px 16px 15px 48px; border-radius: 13px;
+          border: 1px solid #dfe8e5; background: #fff;
           color: var(--library-ink); font: inherit; font-size: 14px;
-          margin: 0 0 28px;
-          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%23748787' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='m20 20-4-4'/%3E%3C/svg%3E");
-          background-repeat: no-repeat; background-position: 16px center;
+          margin: 0; appearance: none; -webkit-appearance: none;
           box-shadow: 0 4px 16px rgba(25,55,55,.035);
           transition: border-color .2s ease, box-shadow .2s ease, background-color .2s ease;
         }
-        .library-page .library-search::placeholder { color: #91a0a0; }
+        .library-page .library-search::-webkit-search-decoration,
+        .library-page .library-search::-webkit-search-cancel-button,
+        .library-page .library-search::-webkit-search-results-button,
+        .library-page .library-search::-webkit-search-results-decoration { -webkit-appearance: none; }
+        .library-page .library-search::placeholder { color: #91a0a0; opacity: 1; }
         .library-page .library-search:focus {
-          outline: none;
-          border-color: #16877f;
+          outline: none; border-color: #16877f;
           box-shadow: 0 0 0 4px rgba(22,135,127,.11), 0 10px 24px rgba(25,55,55,.06);
         }
         .library-page .library-book-grid {
@@ -719,6 +730,10 @@ function Library() {
           .library-page .library-category-section { margin: 20px 0 24px; }
           .library-page .library-category-chip { min-height: 39px; padding: 9px 12px; font-size: 11px; }
           .library-page .library-book-grid { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 12px; }
+          .library-page .library-search-wrap { max-width: none; margin-bottom: 22px; }
+          .library-page .library-category-heading { align-items: flex-start; flex-wrap: wrap; }
+          .library-page .library-category-nav { gap: 8px; margin-inline: -2px; }
+          .library-page .library-category-chip { max-width: 82vw; overflow: hidden; text-overflow: ellipsis; }
           .library-page .library-book-card { padding: 10px; border-radius: 16px; }
           .library-page .library-book-card .library-book-cover { height: 165px; margin-bottom: 13px; }
           .library-page .library-book-title { font-size: 14px; }
@@ -748,9 +763,28 @@ function Library() {
           }
           .library-page .library-note { margin-top: 16px; }
         }
+        @media (max-width: 540px) {
+          .library-page { min-width: 0; }
+          .library-page .library-book-grid { grid-template-columns: minmax(0,1fr); gap: 14px; }
+          .library-page .library-book-card { display: grid; grid-template-columns: minmax(0, 112px) minmax(0,1fr); column-gap: 14px; align-items: start; }
+          .library-page .library-book-card .library-book-cover { grid-column: 1; grid-row: 1 / span 5; height: 170px; margin: 0; }
+          .library-page .library-book-title, .library-page .library-book-author, .library-page .library-book-publisher, .library-page .library-book-description, .library-page .library-book-bottom { grid-column: 2; min-width: 0; }
+          .library-page .library-book-title { min-height: 0; font-size: 15px; }
+          .library-page .library-book-description { min-height: 0; -webkit-line-clamp: 3; margin-bottom: 10px; }
+          .library-page .library-book-bottom { margin-top: 0; padding-top: 8px; }
+          .library-page .library-format-label { margin-bottom: 7px; }
+          .library-page .library-format-text { margin-bottom: 9px; }
+          .library-page .library-book-card .library-order-button { font-size: 11px; min-height: 42px; }
+          .library-page .library-search { font-size: 16px; min-height: 50px; padding-left: 45px; }
+          .library-page .library-search-icon { left: 14px; }
+          .library-page .library-request-panel { padding: 24px 20px; border-radius: 18px; }
+          .library-page .library-pagination { grid-template-columns: minmax(0,1fr) auto minmax(0,1fr); }
+          .library-page .library-pagination button:last-child { justify-self: end; }
+        }
         @media (max-width: 380px) {
-          .library-page .library-book-grid { grid-template-columns: 1fr; }
-          .library-page .library-book-card .library-book-cover { height: 210px; }
+          .library-page .library-book-card { grid-template-columns: minmax(0, 92px) minmax(0,1fr); column-gap: 10px; }
+          .library-page .library-book-card .library-book-cover { height: 148px; }
+          .library-page .library-book-card .library-order-button { padding-inline: 5px; font-size: 10px; }
         }
       `}</style>
 
@@ -817,14 +851,21 @@ function Library() {
           <p>{activeCategory.description}</p>
         </div>
 
-        <input
+        <div className="library-search-wrap">
+          <svg className="library-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <circle cx="11" cy="11" r="7" />
+            <path d="m20 20-4-4" />
+          </svg>
+          <input
           type="search"
           value={search}
           onChange={(event) => { setSearch(event.target.value); setCurrentPage(1); }}
           placeholder="Rechercher un titre ou un auteur..."
           aria-label="Rechercher un ouvrage"
           className="library-search"
-        />
+          />
+        </div>
+
 
         {loading && <p>Chargement des ouvrages...</p>}
 
@@ -877,7 +918,7 @@ function Library() {
                       type="button"
                       onClick={() => requestBook(book)}
                     >
-                      Commander ce document <span aria-hidden="true">↗</span>
+                      Obtenir ce livre <span aria-hidden="true">↗</span>
                     </button>
                   </div>
                 </article>

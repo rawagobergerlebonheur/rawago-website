@@ -313,6 +313,34 @@ function Admin() {
   const [notesNotice, setNotesNotice] = useState("");
   const [editingNoteId, setEditingNoteId] = useState(null);
 
+  // Outils administratifs locaux : tâches et recherche globale (sans modifier Supabase).
+  const [adminQuickTasks, setAdminQuickTasks] = useState(() => {
+    try { return JSON.parse(localStorage.getItem("rawago_admin_quick_tasks") || "[]"); }
+    catch { return []; }
+  });
+  const [adminTaskDraft, setAdminTaskDraft] = useState("");
+  const [adminGlobalSearch, setAdminGlobalSearch] = useState("");
+  const [clientDirectorySearch, setClientDirectorySearch] = useState("");
+  const [clientDirectorySort, setClientDirectorySort] = useState("recent");
+  const [adminQuickCreateOpen, setAdminQuickCreateOpen] = useState(false);
+  useEffect(() => {
+    try { localStorage.setItem("rawago_admin_quick_tasks", JSON.stringify(adminQuickTasks)); }
+    catch (storageError) { console.warn("RAWAGO: sauvegarde locale des tâches indisponible", storageError); }
+  }, [adminQuickTasks]);
+  const addAdminQuickTask = (event) => {
+    event.preventDefault();
+    const title = adminTaskDraft.trim();
+    if (!title) return;
+    setAdminQuickTasks(previous => [{ id: `admin-task-${Date.now()}`, title, done: false, createdAt: new Date().toISOString() }, ...previous]);
+    setAdminTaskDraft("");
+  };
+  const adminSearchTerm = adminGlobalSearch.trim().toLowerCase();
+  const adminSearchResults = adminSearchTerm ? [
+    ...clients.filter(item => `${item.full_name || ""} ${item.email || ""} ${item.phone || ""}`.toLowerCase().includes(adminSearchTerm)).slice(0, 5).map(item => ({ type: "client", label: item.full_name || "Client sans nom", detail: item.email || item.phone || "Fiche client", page: "clients", id: item.id })),
+    ...requests.filter(item => `${item.service || ""} ${item.status || ""} ${clients.find(c => c.id === item.client_id)?.full_name || ""}`.toLowerCase().includes(adminSearchTerm)).slice(0, 5).map(item => ({ type: "request", label: item.service || "Demande", detail: clients.find(c => c.id === item.client_id)?.full_name || "Demande client", page: "requests", id: item.id })),
+    ...messages.filter(item => `${item.body || ""} ${clients.find(c => c.id === item.client_id)?.full_name || ""}`.toLowerCase().includes(adminSearchTerm)).slice(0, 5).map(item => ({ type: "message", label: clients.find(c => c.id === item.client_id)?.full_name || "Message client", detail: item.body || "Conversation", page: "messages", id: item.id, clientId: item.client_id }))
+  ].slice(0, 10) : [];
+
   // Publications de la rubrique « Savoirs et réflexions »
   const [knowledgeArticles, setKnowledgeArticles] = useState([]);
   const [knowledgeLoading, setKnowledgeLoading] = useState(false);
@@ -1736,6 +1764,11 @@ function Admin() {
   const recentRequests = [...requests]
     .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
     .slice(0, 5);
+  const oldestPendingRequest = [...pendingRequests]
+    .filter(item => item.created_at)
+    .sort((a, b) => new Date(a.created_at) - new Date(b.created_at))[0] || null;
+  const waitingOverThreeDays = pendingRequests.filter(item => item.created_at && (Date.now() - new Date(item.created_at).getTime()) > 3 * 24 * 60 * 60 * 1000);
+  const oldestRequestAgeDays = oldestPendingRequest?.created_at ? Math.max(0, Math.floor((Date.now() - new Date(oldestPendingRequest.created_at).getTime()) / (24 * 60 * 60 * 1000))) : 0;
 
   async function saveAdminAccount(event) {
     event.preventDefault();
@@ -2135,7 +2168,81 @@ function Admin() {
           .admin-area .admin-main { padding-left:10px !important; padding-right:10px !important; }
         }
 
-      `}</style>
+        /* RAWAGO ADMIN 2.0 — dashboard polish + practical tools */
+        .admin-area .admin-topbar-actions { display:flex; flex-wrap:wrap; justify-content:flex-end; align-items:center; gap:10px; }
+        .admin-area .admin-global-search { display:flex; align-items:center; gap:9px; min-width:260px; max-width:440px; padding:10px 13px; background:#fff; border:1px solid #dce5df; border-radius:13px; box-shadow:0 5px 18px rgba(23,59,56,.035); }
+        .admin-area .admin-global-search > span { font-size:20px; color:#16877d; }
+        .admin-area .admin-global-search input { border:0!important; outline:0!important; background:transparent!important; box-shadow:none!important; min-width:0; width:100%; padding:0!important; font-size:13px!important; }
+        .admin-area .admin-global-search button { border:0; background:transparent; color:#7a8b84; font-size:20px; cursor:pointer; padding:0 2px; }
+        .admin-area .admin-search-results { position:relative; z-index:10; margin:0 0 20px; padding:16px; border:1px solid #dce5df; border-radius:16px; background:#fff; box-shadow:0 14px 36px rgba(23,59,56,.07); }
+        .admin-area .admin-search-results-head { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:12px; color:#193936; }
+        .admin-area .admin-search-results-head span { font-size:12px; color:#7b8983; }
+        .admin-area .admin-search-results > button { display:grid; grid-template-columns:auto 1fr auto; gap:5px 12px; align-items:center; width:100%; padding:12px; border:1px solid #edf0eb; background:#fafbf8; border-radius:11px; text-align:left; color:#193936; cursor:pointer; margin:6px 0; }
+        .admin-area .admin-search-results > button:hover { background:#eef5f1; border-color:#bdd4ca; }
+        .admin-area .admin-search-result-type { grid-row:span 2; font-size:9px; letter-spacing:.12em; color:#16877d; font-weight:800; }
+        .admin-area .admin-search-results > button small { grid-column:2; color:#71817b; }
+        .admin-area .admin-search-results > button > span:last-child { grid-column:3; grid-row:1/3; color:#16877d; }
+        .admin-area .admin-welcome-strip { display:grid; grid-template-columns:minmax(0,1fr) minmax(240px, auto); gap:24px; align-items:center; padding:26px 28px; border-radius:19px; background:linear-gradient(120deg,#173b38,#204a44); color:#f7f8f3; box-shadow:0 16px 35px rgba(18,53,49,.12); }
+        .admin-area .admin-welcome-strip h2 { margin:8px 0; font-family:Georgia,serif; font-size:clamp(24px,3vw,36px); line-height:1.1; color:#f7f8f3!important; }
+        .admin-area .admin-welcome-strip p { margin:0; color:#d0ddd6!important; }
+        .admin-area .admin-welcome-strip .eyebrow { color:#8ed2c4!important; }
+        .admin-area .admin-quick-actions { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; }
+        .admin-area .admin-quick-actions button { padding:12px 13px; background:rgba(255,255,255,.08); color:#f7f8f3; border:1px solid rgba(255,255,255,.16); border-radius:11px; text-align:left; font-size:12px; font-weight:700; cursor:pointer; }
+        .admin-area .admin-quick-actions button:hover { background:rgba(255,255,255,.15); }
+        .admin-area .admin-quick-actions button span { float:right; color:#b8d7c9; }
+        .admin-area .admin-ops-grid { display:grid; grid-template-columns:minmax(0,1.1fr) minmax(280px,.9fr); gap:18px; align-items:stretch; }
+        .admin-area .admin-task-panel, .admin-area .admin-quick-create-panel { border:1px solid #e1e9e3!important; background:#fff!important; box-shadow:0 10px 28px rgba(23,59,56,.04); }
+        .admin-area .admin-panel-title { display:flex; align-items:flex-start; justify-content:space-between; gap:10px; }
+        .admin-area .admin-panel-title h2, .admin-area .admin-quick-create-panel h2 { margin:6px 0 10px; font-family:Georgia,serif; font-size:24px; }
+        .admin-area .admin-task-count { padding:7px 10px; border-radius:20px; background:#edf5f1; color:#17685e; font-size:11px; font-weight:800; white-space:nowrap; }
+        .admin-area .admin-task-add { display:flex; gap:8px; margin:12px 0; }
+        .admin-area .admin-task-add input { flex:1; min-width:0; border:1px solid #dce5df; border-radius:10px; padding:12px!important; }
+        .admin-area .admin-task-add button { border:0; border-radius:10px; padding:0 15px; background:#173b38; color:white; font-weight:700; cursor:pointer; }
+        .admin-area .admin-task-add button:disabled { opacity:.45; cursor:not-allowed; }
+        .admin-area .admin-task-empty { padding:13px; border-radius:10px; background:#f7f9f6; font-size:13px; }
+        .admin-area .admin-task-list { list-style:none; padding:0; margin:8px 0 0; display:grid; gap:5px; }
+        .admin-area .admin-task-list li { display:flex; align-items:center; justify-content:space-between; gap:10px; padding:10px 7px; border-bottom:1px solid #eef1ed; }
+        .admin-area .admin-task-list label { display:flex; align-items:center; gap:10px; flex:1; cursor:pointer; }
+        .admin-area .admin-task-list input { accent-color:#16877d; width:16px; height:16px; }
+        .admin-area .admin-task-list li.is-done span { color:#98a59f; text-decoration:line-through; }
+        .admin-area .admin-task-list li > button { border:0; background:transparent; color:#83918b; font-size:20px; cursor:pointer; }
+        .admin-area .admin-quick-create-panel > p { margin:0 0 12px; }
+        .admin-area .admin-create-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:9px; }
+        .admin-area .admin-create-grid button { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; min-height:76px; border:1px solid #e4ebe5; border-radius:12px; background:#f8faf7; color:#16877d; font-size:19px; cursor:pointer; }
+        .admin-area .admin-create-grid button span { color:#3e5a53; font-size:11px; font-weight:700; }
+        .admin-area .admin-create-grid button:hover { background:#edf5f1; border-color:#b8d2c6; transform:translateY(-1px); }
+        @media(max-width:900px){ .admin-area .admin-welcome-strip{grid-template-columns:1fr;} .admin-area .admin-ops-grid{grid-template-columns:1fr;} .admin-area .admin-global-search{min-width:0;width:100%;max-width:none;} }
+        @media(max-width:560px){ .admin-area .admin-welcome-strip{padding:20px 16px;border-radius:14px;} .admin-area .admin-quick-actions{grid-template-columns:1fr 1fr;} .admin-area .admin-task-add{flex-direction:column;} .admin-area .admin-task-add button{min-height:42px;} .admin-area .admin-create-grid{grid-template-columns:repeat(2,minmax(0,1fr));} }
+        .admin-area .admin-client-directory { display:grid; gap:18px; }
+        .admin-area .admin-client-heading { display:flex; justify-content:space-between; align-items:center; gap:18px; padding:8px 0 4px; }
+        .admin-area .admin-client-heading h2 { margin:7px 0; color:#193936; font:600 clamp(25px,3vw,34px)/1.12 Georgia,serif; }
+        .admin-area .admin-client-heading p { margin:0; color:#71817b; }
+        .admin-area .admin-client-total { display:grid; text-align:center; min-width:90px; padding:13px 18px; border-radius:14px; background:#eaf3ef; color:#174b43; }
+        .admin-area .admin-client-total strong { font:600 27px Georgia,serif; }
+        .admin-area .admin-client-total span { font-size:11px; }
+        .admin-area .admin-client-toolbar { display:flex; gap:10px; }
+        .admin-area .admin-client-search { display:flex; align-items:center; gap:10px; flex:1; min-width:0; padding:0 13px; border:1px solid #dce5df; border-radius:11px; background:#fff; }
+        .admin-area .admin-client-search > span { color:#688078; font-size:23px; }
+        .admin-area .admin-client-search input { width:100%; min-width:0; border:0!important; outline:none; box-shadow:none!important; }
+        .admin-area .admin-client-toolbar select { min-width:155px; border:1px solid #dce5df; border-radius:11px; padding:10px 12px; background:#fff; color:#193936; }
+        .admin-area .admin-client-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px; }
+        .admin-area .admin-client-card { min-width:0; padding:19px; border:1px solid #e3eae5; border-radius:15px; background:linear-gradient(145deg,#fff,#fbfcf9); box-shadow:0 8px 22px rgba(25,57,54,.035); }
+        .admin-area .admin-client-card-top { display:flex; justify-content:space-between; align-items:center; }
+        .admin-area .admin-client-avatar { display:grid; place-items:center; width:42px; height:42px; border-radius:13px; background:#e8f1ec; color:#20594f; font:600 19px Georgia,serif; }
+        .admin-area .admin-client-badge { padding:5px 9px; border-radius:20px; background:#f1f4ef; color:#64766c; font-size:10px; letter-spacing:.04em; }
+        .admin-area .admin-client-card h3 { margin:14px 0 7px; color:#193936; font:600 19px Georgia,serif; }
+        .admin-area .admin-client-meta { margin:5px 0; color:#71817b; font-size:12px; overflow-wrap:anywhere; }
+        .admin-area .admin-client-stats { display:flex; gap:18px; margin:15px 0 10px; padding:12px 0; border-top:1px solid #edf0ec; border-bottom:1px solid #edf0ec; color:#71817b; font-size:11px; }
+        .admin-area .admin-client-stats strong { color:#20594f; font-size:15px; }
+        .admin-area .admin-client-last,.admin-area .admin-client-result-count { color:#87948e; font-size:11px; }
+        .admin-area .admin-client-actions { display:flex; flex-wrap:wrap; gap:8px; margin-top:14px; }
+        .admin-area .admin-client-actions .btn { flex:1 1 auto; text-align:center; }
+        .admin-area .admin-client-empty { padding:35px 20px; text-align:center; border:1px dashed #ccd9d1; border-radius:14px; color:#71817b; }
+        .admin-area .admin-client-empty strong { color:#193936; }
+        @media(max-width:760px){ .admin-area .admin-client-grid{grid-template-columns:1fr;} .admin-area .admin-client-toolbar{flex-direction:column;} .admin-area .admin-client-toolbar select{width:100%;} .admin-area .admin-client-heading{align-items:flex-start;} }
+
+      `}
+</style>
       {notification && (
 
         <div
@@ -2282,9 +2389,18 @@ function Admin() {
               </p>
             </div>
             <div className="admin-topbar-actions">
+              <label className="admin-global-search" aria-label="Recherche globale RAWAGO">
+                <span aria-hidden="true">⌕</span>
+                <input value={adminGlobalSearch} onChange={event => setAdminGlobalSearch(event.target.value)} placeholder="Rechercher client, demande, message…" />
+                {adminGlobalSearch && <button type="button" onClick={() => setAdminGlobalSearch("")} aria-label="Effacer la recherche">×</button>}
+              </label>
               <span className="admin-live-pill"><span className="admin-live-dot"></span> Espace sécurisé</span>
             </div>
           </header>
+      {adminSearchTerm && <section className="admin-search-results" aria-live="polite">
+        <div className="admin-search-results-head"><strong>Résultats de recherche</strong><span>{adminSearchResults.length} résultat(s)</span></div>
+        {adminSearchResults.length === 0 ? <p>Aucun résultat dans les clients, demandes ou messages.</p> : adminSearchResults.map((result, index) => <button type="button" key={`${result.type}-${result.id}-${index}`} onClick={() => { if (result.clientId) setSelectedMessageClient(result.clientId); setActiveAdminPage(result.page); setAdminGlobalSearch(""); }}><span className="admin-search-result-type">{result.type === "client" ? "CLIENT" : result.type === "request" ? "DEMANDE" : "MESSAGE"}</span><strong>{result.label}</strong><small>{result.detail}</small><span aria-hidden="true">↗</span></button>)}
+      </section>}
       {error && <p className="form-error">{error}</p>}
 
 
@@ -2960,8 +3076,24 @@ function Admin() {
       )}
 
       {activeAdminPage === "dashboard" && (
-        <div style={{ display: "grid", gap: "22px" }}>
-          <section className="dashboard-grid" aria-label="Indicateurs de l'activité">
+        <div className="admin-dashboard-v2" style={{ display: "grid", gap: "22px" }}>
+          <section className="admin-welcome-strip">
+            <div><span className="eyebrow">CENTRE DE PILOTAGE</span><h2>Votre espace RAWAGO, en un regard.</h2><p>Accédez rapidement à l’essentiel et gardez les opérations en mouvement.</p></div>
+            <div className="admin-quick-actions"><button type="button" onClick={() => setActiveAdminPage("requests")}>Voir les demandes <span>↗</span></button><button type="button" onClick={() => setActiveAdminPage("messages")}>Messages <span>↗</span></button><button type="button" onClick={() => setActiveAdminPage("references")}>Catalogue <span>↗</span></button><button type="button" onClick={() => setActiveAdminPage("knowledge")}>Publier un savoir <span>↗</span></button></div>
+          </section>
+          <details className="admin-overview-group" open>
+            <summary><span><b>Organisation &amp; création rapide</b><small>Tâches et raccourcis de gestion</small></span><span className="admin-overview-chevron">⌄</span></summary>
+          <section className="admin-ops-grid">
+            <article className="dashboard-panel admin-task-panel"><div className="admin-panel-title"><div><span className="eyebrow">ORGANISATION</span><h2>Ma liste de tâches</h2></div><span className="admin-task-count">{adminQuickTasks.filter(task => !task.done).length} à faire</span></div>
+              <form onSubmit={addAdminQuickTask} className="admin-task-add"><input value={adminTaskDraft} onChange={event => setAdminTaskDraft(event.target.value)} placeholder="Ajouter une tâche administrative…" aria-label="Nouvelle tâche administrative"/><button type="submit" disabled={!adminTaskDraft.trim()}>＋ Ajouter</button></form>
+              {adminQuickTasks.length === 0 ? <p className="admin-task-empty">Aucune tâche pour le moment. Ajoutez votre première action ici.</p> : <ul className="admin-task-list">{adminQuickTasks.slice(0, 8).map(task => <li key={task.id} className={task.done ? "is-done" : ""}><label><input type="checkbox" checked={task.done} onChange={() => setAdminQuickTasks(previous => previous.map(item => item.id === task.id ? { ...item, done: !item.done } : item))}/><span>{task.title}</span></label><button type="button" aria-label="Supprimer la tâche" title="Supprimer" onClick={() => setAdminQuickTasks(previous => previous.filter(item => item.id !== task.id))}>×</button></li>)}</ul>}
+            </article>
+            <article className="dashboard-panel admin-quick-create-panel"><span className="eyebrow">CRÉATION RAPIDE</span><h2>Que souhaitez-vous gérer ?</h2><p>Accès direct aux espaces les plus utilisés.</p><div className="admin-create-grid"><button type="button" onClick={() => setActiveAdminPage("clients")}>♙<span>Clients</span></button><button type="button" onClick={() => setActiveAdminPage("requests")}>▤<span>Demandes</span></button><button type="button" onClick={() => setActiveAdminPage("messages")}>✉<span>Messages</span></button><button type="button" onClick={() => setActiveAdminPage("references")}>▣<span>Livres</span></button><button type="button" onClick={() => setActiveAdminPage("knowledge")}>✎<span>Articles</span></button><button type="button" onClick={() => setActiveAdminPage("events")}>▦<span>Événements</span></button></div></article>
+          </section>
+          </details>
+          <details className="admin-overview-group">
+            <summary><span><b>Indicateurs de l’activité</b><small>Demandes, messages, prestations et clients</small></span><span className="admin-overview-chevron">⌄</span></summary>
+            <section className="dashboard-grid" aria-label="Indicateurs de l'activité">
             <article className="dashboard-panel">
               <p className="eyebrow">À TRAITER</p>
               <h2 style={{ fontSize: "2rem", margin: "5px 0" }}>{pendingRequests.length}</h2>
@@ -2995,8 +3127,30 @@ function Admin() {
               </button>
             </article>
           </section>
+          </details>
 
-          <section className="dashboard-panel">
+          <details className="admin-overview-group">
+            <summary><span><b>Priorités &amp; demandes à surveiller</b><small>{waitingOverThreeDays.length} demande(s) en attente depuis plus de 3 jours</small></span><span className="admin-overview-chevron">⌄</span></summary>
+            <section className="dashboard-panel" aria-label="Priorités opérationnelles">
+            <div className="request-heading">
+              <h2>À surveiller</h2>
+              <span className={`status ${waitingOverThreeDays.length ? "status-pending" : "status-completed"}`}>{waitingOverThreeDays.length} demande(s) depuis plus de 3 jours</span>
+            </div>
+            {pendingRequests.length === 0 ? <p className="empty-state">Aucune demande en attente : tout est à jour.</p> : <div className="request-list">
+              {oldestPendingRequest && <article className="request-item">
+                <div className="request-item-top"><strong>Demande la plus ancienne à traiter</strong><span className="status status-pending">{oldestRequestAgeDays} jour(s)</span></div>
+                <p><strong>{oldestPendingRequest.service}</strong></p>
+                <p>{clients.find(person => person.id === oldestPendingRequest.client_id)?.full_name || "Client"}</p>
+                <small>Reçue le {new Date(oldestPendingRequest.created_at).toLocaleDateString("fr-FR")} · {statusLabels[oldestPendingRequest.status] || oldestPendingRequest.status}</small>
+                <button className="btn primary" type="button" onClick={() => setActiveAdminPage("requests")}>Ouvrir le suivi des demandes</button>
+              </article>}
+              {waitingOverThreeDays.length > 0 && <article className="request-item"><strong>Requiert une attention particulière</strong><p>{waitingOverThreeDays.length} demande(s) en attente depuis plus de 3 jours. Pensez à répondre ou à mettre à jour leur statut.</p><button className="btn secondary" type="button" onClick={() => setActiveAdminPage("requests")}>Traiter ces demandes</button></article>}
+            </div>}
+          </section>
+          </details>
+          <details className="admin-overview-group">
+            <summary><span><b>Notifications &amp; activité récente</b><small>{unreadMessages.length} message(s) non lu(s) · {requests.length} demande(s) enregistrée(s)</small></span><span className="admin-overview-chevron">⌄</span></summary>
+            <section className="dashboard-panel">
             <div className="request-heading">
               <h2>Centre de notifications</h2>
               <span className="status status-pending">{unreadMessages.length} non lu(s)</span>
@@ -3101,38 +3255,47 @@ function Admin() {
             <p style={{ marginTop: "18px" }}>
               {requests.length} demande(s) au total · {new Set(messages.map(message => message.client_id)).size} conversation(s) · {adminNotes.length} note(s) personnelle(s)
             </p>
-          </section>
+            </section>
+          </details>
         </div>
       )}
 
-      {activeAdminPage === "clients" && (
-        <section className="dashboard-panel">
-          <h2>Liste des clients</h2>
-          {clients.length === 0 ? (
-            <p>Aucun client enregistré.</p>
-          ) : (
-            <div className="request-list">
-              {clients.map(client => (
-                <article className="request-item" key={client.id}>
-                  <h3>{client.full_name || "Nom non renseigné"}</h3>
-                  <p>Téléphone : {client.phone || "Non renseigné"}</p>
-                  <p>Pays : {client.country || "Non renseigné"}</p>
-                  {client.phone && (
-                    <a
-                      className="btn primary"
-                      href={`https://wa.me/${client.phone.replace(/\D/g, "")}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      Contacter sur WhatsApp
-                    </a>
-                  )}
-                </article>
-              ))}
-            </div>
-          )}
-        </section>
-      )}
+      {activeAdminPage === "clients" && (() => {
+        const term = clientDirectorySearch.trim().toLowerCase();
+        const visibleClients = clients.filter(client =>
+          `${client.full_name || ""} ${client.email || ""} ${client.phone || ""} ${client.country || ""}`.toLowerCase().includes(term)
+        ).sort((a, b) => {
+          if (clientDirectorySort === "name") return (a.full_name || "").localeCompare(b.full_name || "", "fr");
+          if (clientDirectorySort === "country") return (a.country || "").localeCompare(b.country || "", "fr");
+          return new Date(b.created_at || 0) - new Date(a.created_at || 0);
+        });
+        return <section className="admin-client-directory">
+          <div className="admin-client-heading">
+            <div><span className="eyebrow">RELATION CLIENT</span><h2>Répertoire des clients</h2><p>Retrouvez les profils et accédez rapidement à leur suivi.</p></div>
+            <div className="admin-client-total"><strong>{clients.length}</strong><span>client(s)</span></div>
+          </div>
+          <div className="admin-client-toolbar">
+            <label className="admin-client-search"><span aria-hidden="true">⌕</span><input value={clientDirectorySearch} onChange={event => setClientDirectorySearch(event.target.value)} placeholder="Rechercher un nom, email, téléphone ou pays…" aria-label="Rechercher un client" /></label>
+            <select value={clientDirectorySort} onChange={event => setClientDirectorySort(event.target.value)} aria-label="Trier les clients"><option value="recent">Plus récents</option><option value="name">Nom A à Z</option><option value="country">Pays A à Z</option></select>
+          </div>
+          {visibleClients.length === 0 ? <div className="admin-client-empty"><strong>{clients.length ? "Aucun résultat" : "Aucun client enregistré"}</strong><p>{clients.length ? "Essayez un autre terme de recherche." : "Les nouveaux comptes clients apparaîtront ici."}</p></div> :
+            <div className="admin-client-grid">{visibleClients.map(client => {
+              const clientRequests = requests.filter(item => item.client_id === client.id);
+              const clientMessages = messages.filter(item => item.client_id === client.id);
+              const lastActivity = [...clientRequests, ...clientMessages].map(item => item.created_at).filter(Boolean).sort((a,b) => new Date(b)-new Date(a))[0];
+              return <article className="admin-client-card" key={client.id}>
+                <div className="admin-client-card-top"><span className="admin-client-avatar">{(client.full_name || "C").trim().charAt(0).toUpperCase()}</span><span className="admin-client-badge">Client</span></div>
+                <h3>{client.full_name || "Nom non renseigné"}</h3>
+                <p className="admin-client-meta">{client.email || "Adresse email non renseignée"}</p>
+                <p className="admin-client-meta">{client.phone || "Téléphone non renseigné"} · {client.country || "Pays non renseigné"}</p>
+                <div className="admin-client-stats"><span><strong>{clientRequests.length}</strong> demande(s)</span><span><strong>{clientMessages.length}</strong> message(s)</span></div>
+                <div className="admin-client-last">{lastActivity ? `Dernière activité : ${new Date(lastActivity).toLocaleDateString("fr-FR")}` : "Aucune activité enregistrée"}</div>
+                <div className="admin-client-actions"><button className="btn secondary" type="button" onClick={() => { setSelectedMessageClient(client.id); setActiveAdminPage("messages"); }}>Voir les échanges</button>{client.phone && <a className="btn primary" href={`https://wa.me/${client.phone.replace(/\D/g, "")}`} target="_blank" rel="noopener noreferrer">WhatsApp ↗</a>}</div>
+              </article>;
+            })}</div>}
+          <p className="admin-client-result-count">{visibleClients.length} résultat(s) affiché(s) sur {clients.length}</p>
+        </section>;
+      })()}
 
       {activeAdminPage === "notes" && (
         <section className="dashboard-panel">

@@ -452,8 +452,8 @@ export default function Community() {
     <main className="community-page">
       <style>{`
         .community-page {
-          --cm-ink:#173239; --cm-muted:#687a7d; --cm-green:#075b4b;
-          --cm-teal:#159b91; --cm-line:#e4e9e5; --cm-cream:#f6f3eb;
+          --cm-ink:#173239; --cm-muted:#687a7d; --cm-green:#285b91;
+          --cm-teal:#4b8fd0; --cm-line:#e4e9e5; --cm-cream:#f6f3eb;
           width:100%; max-width:1440px; margin:0 auto; padding:54px clamp(18px,5vw,76px) 88px;
           color:var(--cm-ink); background:#fbfaf7;
         }
@@ -473,7 +473,7 @@ export default function Community() {
         .community-page .community-hero p { max-width:620px; margin:0; color:var(--cm-muted); font-size:16px; line-height:1.85; }
         .community-page .community-hero-visual {
           position:relative; min-width:0; min-height:320px; overflow:hidden;
-          border-radius:18px 68px 18px 18px; background:#e8f0ed;
+          border-radius:18px 68px 18px 18px; background:#edf2f9;
           box-shadow:0 18px 42px rgba(23,50,57,.10);
         }
         .community-page .community-hero-visual img { display:block; width:100%; height:100%; min-height:320px; object-fit:cover; }
@@ -488,8 +488,8 @@ export default function Community() {
           color:var(--cm-ink); text-align:left; cursor:pointer;
           box-shadow:0 7px 22px rgba(23,50,57,.035); transition:transform .2s,border-color .2s,box-shadow .2s;
         }
-        .community-page .community-space:hover { transform:translateY(-3px); border-color:#9bc9bf; box-shadow:0 13px 28px rgba(23,50,57,.08); }
-        .community-page .community-space.active { border-color:var(--cm-teal); background:#f4faf7; box-shadow:inset 0 0 0 1px var(--cm-teal),0 9px 25px rgba(8,127,123,.08); }
+        .community-page .community-space:hover { transform:translateY(-3px); border-color:#a9c9e8; box-shadow:0 13px 28px rgba(23,50,57,.08); }
+        .community-page .community-space.active { border-color:var(--cm-teal); background:#f2f6fb; box-shadow:inset 0 0 0 1px var(--cm-teal),0 9px 25px rgba(8,127,123,.08); }
         .community-page .community-space .eyebrow { color:var(--cm-teal); font-size:11px; font-weight:800; letter-spacing:.15em; }
         .community-page .community-space h2 { margin:18px 0 8px; font:500 21px/1.25 Georgia,"Times New Roman",serif; }
         .community-page .community-space p { margin:0 0 18px; color:var(--cm-muted); font-size:13px; line-height:1.65; }
@@ -509,9 +509,9 @@ export default function Community() {
           background:var(--cm-green); color:#fff; font-size:13px; font-weight:700; cursor:pointer;
           transition:background .2s,transform .2s;
         }
-        .community-page .community-btn:hover { background:#08725d; transform:translateY(-1px); }
+        .community-page .community-btn:hover { background:#326da8; transform:translateY(-1px); }
         .community-page .community-btn:disabled { opacity:.55; cursor:not-allowed; transform:none; }
-        .community-page .community-btn.secondary { border-color:#d9e8e2; background:#edf5f1; color:var(--cm-green); }
+        .community-page .community-btn.secondary { border-color:#dce8f5; background:#edf5f1; color:var(--cm-green); }
         .community-page .community-btn.danger { border-color:#b42318; background:#b42318; color:#fff; }
         .community-page .community-alert { padding:13px 16px; border-radius:10px; margin:15px 0; font-size:13px; line-height:1.6; }
         .community-page .community-alert.error { background:#fff0ef; color:#a12e28; }
@@ -523,7 +523,7 @@ export default function Community() {
           transition:background .18s,border-color .18s,color .18s;
         }
         .community-page .community-tabs button:hover,.community-page .community-actions button:hover,
-        .community-page .community-member-action:hover { border-color:#9bc9bf; background:#f2f8f5; }
+        .community-page .community-member-action:hover { border-color:#a9c9e8; background:#f2f8f5; }
         .community-page .community-tabs button.active { border-color:var(--cm-green); background:var(--cm-green); color:#fff; }
         .community-page .community-toolbar { display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin:18px 0; }
         .community-page .community-toolbar input { flex:1 1 280px; }

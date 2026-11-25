@@ -9,6 +9,8 @@
     "preview": "vite preview --host 0.0.0.0"
   },
   "dependencies": {
+    "@capacitor/android": "^8.6.2",
+    "@capacitor/core": "^8.6.2",
     "@supabase/supabase-js": "^2.0.0",
     "@vitejs/plugin-react": "latest",
     "lucide-react": "latest",
@@ -16,5 +18,8 @@
     "react-dom": "latest",
     "react-router-dom": "^7.18.5",
     "vite": "latest"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^8.6.2"
   }
 }
